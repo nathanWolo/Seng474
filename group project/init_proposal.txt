@@ -1,0 +1,18 @@
+Undergraduate or graduate student:
+UNDERGRAD
+
+
+Your name:
+Nathan Woloshyn
+
+
+Your email address:
+nathanwoloshyn@gmail.com
+
+
+Title:
+ReLUno
+
+
+2-3 sentence description:
+Reinforcement Learning (RL) has seen a renaissance in the recent era of deep learning, with research labs like DeepMind (Go, Chess) and OpenAI ( DOTA) seeing great success in applying RL algorithms to games with the help of deep NNs. Uno is a popular card game with simple rules, but a deep state space (napkin math says over 2^200 states), a great testbed for applying deep RL. The project could benchmark several different RL algorithms (e.g policy gradient, Q learning, random policy) against each other to see which is best suited for the game in terms of episodes until convergence or overall quality of play.
