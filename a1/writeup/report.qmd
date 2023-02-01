@@ -65,8 +65,9 @@ def test_entropy_depths():
             best_depth = i
     plt.plot(range(1, 100), test_scores, label='Test')
     plt.plot(range(1, 100), training_scores, label='Training')
-    plt.plot(best_depth, best_score, 'ro', label='Best score: ' + str(best_score) + ' at depth: ' + str(best_depth))
-    plt.legend(loc="upper left")
+    plt.plot(best_depth, best_score, 'ro', label='Best score: '
+        + "{:.4f}".format(best_score) + ' at depth: ' + str(best_depth))
+    plt.legend(loc="lower right")
     plt.xlabel('Depth')
     plt.ylabel('Score')
     plt.title('Entropy, no pruning')
@@ -93,8 +94,9 @@ def test_gini_depths():
             best_depth = i
     plt.plot(range(1, 100), test_scores, label='Test')
     plt.plot(range(1, 100), training_scores, label='Training')
-    plt.plot(best_depth, best_score, 'ro', label='Best score: ' + str(best_score) + ' at depth: ' + str(best_depth))
-    plt.legend(loc="upper left")
+    plt.plot(best_depth, best_score, 'ro', label='Best score: '
+         + "{:.4f}".format(best_score) + ' at depth: ' + str(best_depth))
+    plt.legend(loc="lower right")
     plt.xlabel('Depth')
     plt.ylabel('Score')
     plt.title('Gini, no pruning')
@@ -119,6 +121,84 @@ Running the code above gives us the following results:
 
 We can see that at low depth accuracy quickly grows as we allow a tree to make more splits, but around depth = 10 the models performance quickly declines. This is likely due to overfitting, as we can see that as depth increases the training accuracy continues to increase, but the test accuracy starts to decrease. This is a sign that the model is overfitting to the training data, and is not generalizing well to the test data. This is a common problem with decision trees, and why we will be using pruning in our next experiment. Overall, the two choices of criterion, entropy and Gini impurity, seem to perform similarly, with the best score being around 0.85 for both, and both having a best depth of around 10.
 
+Next we test the effect of varying what percentage of the data we allocate to training and test, using the same depth of 10 for the tree. We use the code below to test the effect of varying the train/test split from 0% to 100% in 1% increments.
+
+```python
+'''Test various training set sizes, with entropy as the criterion, using depth = 10'''
+
+def test_entropy_sizes():
+    best_size = 0
+    best_score = 0
+    test_scores = []
+    training_scores = []
+    for i in range(1, 100):
+        train, test = read_data.partition_data(read_data.read_data(), train_size=i/100)
+        eS = DecisionTreeClassifier(random_state=0, max_depth=10, 
+            criterion="entropy").fit(train.drop(columns=['income']), train['income'])
+        test_scores.append(eS.score(test.drop(columns=['income']), test['income']))
+        training_scores.append(eS.score(train.drop(columns=['income']), train['income']))
+        if eS.score(test.drop(columns=['income']), test['income']) > best_score:
+            best_score = eS.score(test.drop(columns=['income']), test['income'])
+            best_size = i
+    plt.plot(range(1, 100), test_scores, label='Test')
+    plt.plot(range(1, 100), training_scores, label='Training')
+    plt.plot(best_size, best_score, 'ro', label='Best score: '
+         + "{:.4f}".format(best_score) + ' at size: ' + str(best_size))
+    plt.legend(loc="lower right")
+    plt.xlabel('Size')
+    plt.ylabel('Score')
+    plt.title('Entropy, no pruning')
+    #plt.show()
+    plt.savefig('entropy_no_pruning_scores_varying_size.png')
+    plt.clf()
+
+'''Test various training set sizes, with gini as the criterion, using depth = 10'''
+
+def test_gini_sizes():
+    best_size = 0
+    best_score = 0
+    test_scores = []
+    training_scores = []
+    for i in range(1, 100):
+        train, test = read_data.partition_data(read_data.read_data(), train_size=i/100)
+        gS = DecisionTreeClassifier(random_state=0, max_depth=10, 
+            criterion="gini").fit(train.drop(columns=['income']), train['income'])
+        test_scores.append(gS.score(test.drop(columns=['income']), test['income']))
+        training_scores.append(gS.score(train.drop(columns=['income']), train['income']))
+        if gS.score(test.drop(columns=['income']), test['income']) > best_score:
+            best_score = gS.score(test.drop(columns=['income']), test['income'])
+            best_size = i
+    plt.plot(range(1, 100), test_scores, label='Test')
+    plt.plot(range(1, 100), training_scores, label='Training')
+    plt.plot(best_size, best_score, 'ro', label='Best score: ' 
+        + "{:.4f}".format(best_score) + ' at size: ' + str(best_size))
+    plt.legend(loc="lower right")
+    plt.xlabel('Size')
+    plt.ylabel('Score')
+    plt.title('Gini, no pruning')
+    #plt.show()
+    plt.savefig('gini_no_pruning_scores_varying_size.png')
+    plt.clf()
+
+test_entropy_sizes()
+test_gini_sizes()
+
+```
+
+Running the code above gives us the following results:
+
+
+::: {layout-ncol=2}
+![](figures/gini_no_pruning_scores_varying_size.png)
+
+![](figures/entropy_no_pruning_scores_varying_size.png)
+:::
+
+We can see that the accuracy of of the model is sensitive to how we partition our data. As we increase the size of the training set, the accuracy of the model increases, but at some point the accuracy the returns become diminishing, and eventually the test set is so small that the model is not able to generalize well. However, unlike the last experiment, there seems to be meaningfully different behavior from our two criteria. We were surprised by this, given the first experiment. So we ran several trials of this experiment, varying the random seed used to partition the data, and the results were consistent. The Gini criterion sees it's best performance when around 80% of the data is allocated to training, while the entropy criterion consistently reaches peak performance when around 60% of the data is allocated to training.
+
+
+
 
 ### Part 2.2: Pruning
 
+Now we will introduce pruning to our decision trees. We will be performing similar experiments with varying depth and varying training set size, but this time we will be using the pruning parameter to control the depth of the tree. We will be using the same methodology as before, but with the addition of the pruning parameter.
