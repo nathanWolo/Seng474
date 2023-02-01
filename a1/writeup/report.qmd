@@ -1,0 +1,12 @@
+---
+title: "SENG 474: Assignment 1 Report"
+subtitle: "Nathan Woloshyn"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
+
+Part 1: Processing the data
+
+The first step is to load the data into a pandas dataframe. The data is stored in a csv file, so we can use the read_csv function to load it into a dataframe. 
