@@ -97,6 +97,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link href="report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="report_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
@@ -158,62 +159,336 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">'''Test various depths, with entropy as the criterion, </span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">store and plot the scores on both training and test sets using matplotlib'''</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_entropy_depths():</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    test_scores <span class="op">=</span> []</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    training_scores <span class="op">=</span> []</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>):</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        eD <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">0</span>, max_depth<span class="op">=</span>i,</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>         criterion<span class="op">=</span><span class="st">"entropy"</span>).fit(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), </span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>         train[<span class="st">'income'</span>])</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        test_scores.append(eD.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]))</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        training_scores.append(eD.score(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>]))</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>), test_scores, label<span class="op">=</span><span class="st">'Test'</span>)</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>), training_scores, label<span class="op">=</span><span class="st">'Training'</span>)</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"upper left"</span>)</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Depth'</span>)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Score'</span>)</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Entropy, no pruning'</span>)</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="co">#plt.show()</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    plt.savefig(<span class="st">'entropy_no_pruning_scores.png'</span>)</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    plt.clf()</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">'''Test various depths, with gini as the criterion,</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co">store and plot the scores on both the training and test sets using matplotlib'''</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_gini_depths():</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    test_scores <span class="op">=</span> []</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    training_scores <span class="op">=</span> []</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>):</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>        gD <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">0</span>, max_depth<span class="op">=</span>i, </span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>        criterion<span class="op">=</span><span class="st">"gini"</span>).fit(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>])</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>        test_scores.append(gD.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]))</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>        training_scores.append(gD.score(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>]))</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>), test_scores, label<span class="op">=</span><span class="st">'Test'</span>)</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>), training_scores, label<span class="op">=</span><span class="st">'Training'</span>)</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"upper left"</span>)</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Depth'</span>)</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Score'</span>)</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Gini, no pruning'</span>)</span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    <span class="co">#plt.show()</span></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    plt.savefig(<span class="st">'gini_no_pruning_scores.png'</span>)</span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    plt.clf()</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>test_entropy_depths()</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>test_gini_depths()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    best_depth <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    best_score <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    test_scores <span class="op">=</span> []</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    training_scores <span class="op">=</span> []</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>):</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        eD <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">0</span>, max_depth<span class="op">=</span>i,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>         criterion<span class="op">=</span><span class="st">"entropy"</span>).fit(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>         train[<span class="st">'income'</span>])</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        test_scores.append(eD.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]))</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        training_scores.append(eD.score(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>]))</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> eD.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]) <span class="op">&gt;</span> best_score:</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>            best_score <span class="op">=</span> eD.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>])</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>            best_depth <span class="op">=</span> i</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>), test_scores, label<span class="op">=</span><span class="st">'Test'</span>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>), training_scores, label<span class="op">=</span><span class="st">'Training'</span>)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    plt.plot(best_depth, best_score, <span class="st">'ro'</span>, label<span class="op">=</span><span class="st">'Best score: '</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_score) <span class="op">+</span> <span class="st">' at depth: '</span> <span class="op">+</span> <span class="bu">str</span>(best_depth))</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"lower right"</span>)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Depth'</span>)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Score'</span>)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Entropy, no pruning'</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="co">#plt.show()</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    plt.savefig(<span class="st">'entropy_no_pruning_scores_varying_depth.png'</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    plt.clf()</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co">'''Test various depths, with gini as the criterion,</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co">store and plot the scores on both the training and test sets using matplotlib'''</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_gini_depths():</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    best_depth <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    best_score <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    test_scores <span class="op">=</span> []</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    training_scores <span class="op">=</span> []</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>):</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>        gD <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">0</span>, max_depth<span class="op">=</span>i, </span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>        criterion<span class="op">=</span><span class="st">"gini"</span>).fit(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>])</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>        test_scores.append(gD.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]))</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>        training_scores.append(gD.score(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>]))</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> gD.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]) <span class="op">&gt;</span> best_score:</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>            best_score <span class="op">=</span> gD.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>])</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>            best_depth <span class="op">=</span> i</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>), test_scores, label<span class="op">=</span><span class="st">'Test'</span>)</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>), training_scores, label<span class="op">=</span><span class="st">'Training'</span>)</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>    plt.plot(best_depth, best_score, <span class="st">'ro'</span>, label<span class="op">=</span><span class="st">'Best score: '</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>         <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_score) <span class="op">+</span> <span class="st">' at depth: '</span> <span class="op">+</span> <span class="bu">str</span>(best_depth))</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"lower right"</span>)</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Depth'</span>)</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Score'</span>)</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Gini, no pruning'</span>)</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    <span class="co">#plt.show()</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    plt.savefig(<span class="st">'gini_no_pruning_scores_varying_depth.png'</span>)</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    plt.clf()</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>test_entropy_depths()</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>test_gini_depths()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Running the code above gives us the following results:</p>
+<div style="page-break-after: always;"></div>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="figures/dt_gini_no_pruning_scores_varying_depth.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="figures/dt_entropy_no_pruning_scores_varying_depth.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<p>We can see that at low depth accuracy quickly grows as we allow a tree to make more splits, but around depth = 10 the models performance quickly declines. This is likely due to overfitting, as we can see that as depth increases the training accuracy continues to increase, but the test accuracy starts to decrease. This is a sign that the model is overfitting to the training data, and is not generalizing well to the test data. This is a common problem with decision trees, and why we will be using pruning in our next experiment. Overall, the two choices of criterion, entropy and Gini impurity, seem to perform similarly, with the best score being around 0.85 for both, and both having a best depth of around 10.</p>
+<p>Next we test the effect of varying what percentage of the data we allocate to training and test, using the same depth of 10 for the tree. We use the code below to test the effect of varying the train/test split from 0% to 100% in 1% increments.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">'''Test various training set sizes, with entropy as the criterion, using depth = 10'''</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_entropy_sizes():</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    best_size <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    best_score <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    test_scores <span class="op">=</span> []</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    training_scores <span class="op">=</span> []</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>):</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        train, test <span class="op">=</span> read_data.partition_data(read_data.read_data(), train_size<span class="op">=</span>i<span class="op">/</span><span class="dv">100</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        eS <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">0</span>, max_depth<span class="op">=</span><span class="dv">10</span>, </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            criterion<span class="op">=</span><span class="st">"entropy"</span>).fit(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>])</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        test_scores.append(eS.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]))</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        training_scores.append(eS.score(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>]))</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> eS.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]) <span class="op">&gt;</span> best_score:</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>            best_score <span class="op">=</span> eS.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>])</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>            best_size <span class="op">=</span> i</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>), test_scores, label<span class="op">=</span><span class="st">'Test'</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>), training_scores, label<span class="op">=</span><span class="st">'Training'</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    plt.plot(best_size, best_score, <span class="st">'ro'</span>, label<span class="op">=</span><span class="st">'Best score: '</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>         <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_score) <span class="op">+</span> <span class="st">' at size: '</span> <span class="op">+</span> <span class="bu">str</span>(best_size))</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"lower right"</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Size'</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Score'</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Entropy, no pruning'</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="co">#plt.show()</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    plt.savefig(<span class="st">'entropy_no_pruning_scores_varying_size.png'</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    plt.clf()</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="co">'''Test various training set sizes, with gini as the criterion, using depth = 10'''</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_gini_sizes():</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    best_size <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    best_score <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    test_scores <span class="op">=</span> []</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    training_scores <span class="op">=</span> []</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>):</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>        train, test <span class="op">=</span> read_data.partition_data(read_data.read_data(), train_size<span class="op">=</span>i<span class="op">/</span><span class="dv">100</span>)</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>        gS <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">0</span>, max_depth<span class="op">=</span><span class="dv">10</span>, </span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>            criterion<span class="op">=</span><span class="st">"gini"</span>).fit(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>])</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>        test_scores.append(gS.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]))</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>        training_scores.append(gS.score(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>]))</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> gS.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]) <span class="op">&gt;</span> best_score:</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>            best_score <span class="op">=</span> gS.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>])</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>            best_size <span class="op">=</span> i</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>), test_scores, label<span class="op">=</span><span class="st">'Test'</span>)</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>), training_scores, label<span class="op">=</span><span class="st">'Training'</span>)</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    plt.plot(best_size, best_score, <span class="st">'ro'</span>, label<span class="op">=</span><span class="st">'Best score: '</span> </span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_score) <span class="op">+</span> <span class="st">' at size: '</span> <span class="op">+</span> <span class="bu">str</span>(best_size))</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"lower right"</span>)</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Size'</span>)</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Score'</span>)</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Gini, no pruning'</span>)</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>    <span class="co">#plt.show()</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    plt.savefig(<span class="st">'gini_no_pruning_scores_varying_size.png'</span>)</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>    plt.clf()</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>test_entropy_sizes()</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>test_gini_sizes()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Running the code above gives us the following results:</p>
 <div class="quarto-layout-panel">
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="figures/gini_no_pruning_scores_varying_depth.png" class="img-fluid"></p>
+<p><img src="figures/dt_gini_no_pruning_scores_varying_size.png" class="img-fluid"></p>
 </div>
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="figures/entropy_no_pruning_scores_varying_depth.png" class="img-fluid"></p>
+<p><img src="figures/dt_entropy_no_pruning_scores_varying_size.png" class="img-fluid"></p>
 </div>
 </div>
 </div>
+<p>We can see that the accuracy of of the model is sensitive to how we partition our data. As we increase the size of the training set, the accuracy of the model increases, but at some point the accuracy the returns become diminishing, and eventually the test set is so small that the model is not able to generalize well. However, unlike the last experiment, there seems to be meaningfully different behavior from our two criteria. We were surprised by this, given the first experiment. So we ran several trials of this experiment, varying the random seed used to partition the data, and the results were consistent. The Gini criterion sees it’s best performance when around 80% of the data is allocated to training, while the entropy criterion consistently reaches peak performance when around 60% of the data is allocated to training.</p>
 </section>
+<section id="part-2.2-pruning" class="level3">
+<h3 class="anchored" data-anchor-id="part-2.2-pruning">Part 2.2: Pruning</h3>
+<p>Now we will introduce pruning to our decision trees. We will be performing similar experiments with varying depth and varying training set size, but this time we will be using the pruning parameter to control the depth of the tree. We will be using the same methodology as before, but with the addition of the pruning parameter. Similar to our previous experiment, we will test the effect varying the pruning parameter <span class="math display">\[ \alpha \]</span> through all possible values and observing the effect on the accuracy of the model. We will be using the entropy criterion for this experiment, and the same training set size of 75% for the data.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>train, test <span class="op">=</span> read_data.partition_data(read_data.read_data())</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#create dt</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">0</span>, criterion<span class="op">=</span><span class="st">"entropy"</span>).fit(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>])</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#prune dt</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> dt.cost_complexity_pruning_path(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>])</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>ccp_alphas, impurities <span class="op">=</span> path.ccp_alphas, path.impurities</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>depths <span class="op">=</span> []</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> []</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>i <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>best_alpha <span class="op">=</span> ccp_alphas[<span class="dv">0</span>]</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>best_score <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ccp_alpha <span class="kw">in</span> ccp_alphas:</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> i <span class="op">%</span> <span class="dv">100</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(i)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    dt_pruned <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">0</span>, criterion<span class="op">=</span><span class="st">"entropy"</span>, ccp_alpha<span class="op">=</span>ccp_alpha).fit(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>])</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> dt_pruned.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]) <span class="op">&gt;</span> best_score:</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>            best_score <span class="op">=</span> dt_pruned.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>])</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>            best_alpha <span class="op">=</span> ccp_alpha</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    depths.append(dt_pruned.get_depth())</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    scores.append(dt_pruned.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]))</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    i<span class="op">+=</span><span class="dv">1</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">'''Plot the scores on both the training and test sets using matplotlib from varying alpha values'''</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_alpha_scores():</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    plt.plot(ccp_alphas, scores, label<span class="op">=</span><span class="st">'Scores'</span>)</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    plt.plot(best_alpha, best_score, <span class="st">'ro'</span>, label<span class="op">=</span><span class="st">'Best score: '</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_score) <span class="op">+</span> <span class="st">' at alpha: '</span> <span class="op">+</span> <span class="bu">str</span>(best_alpha))</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"upper right"</span>)</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Alpha'</span>)</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Score'</span>)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Entropy, pruning'</span>)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    plt.savefig(<span class="st">'entropy_pruning_scores_varying_alpha.png'</span>)</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>    plt.clf()</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="co">'''plot the depths as alpha varies'''</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_alpha_depths():</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>    plt.plot(ccp_alphas, depths, label<span class="op">=</span><span class="st">'Depth'</span>)</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"upper right"</span>)</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Alpha'</span>)</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Depth'</span>)</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Entropy, pruning'</span>)</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>    plt.savefig(<span class="st">'entropy_pruning_depths_varying_alpha.png'</span>)</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>    plt.clf()</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>plot_alpha_scores()</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>plot_alpha_depths()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This code lets a decision tree grow to full depth, and then we collect all the possible cost complexity pruning paths and their alpha values. Then we create a tree with each value and measure its score on the test set, we also record the max depth of each such tree. We can see the results below:</p>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="figures/dt_entropy_pruning_scores_varying_alpha.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="figures/dt_entropy_pruning_depths_varying_alpha.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<p>We can see that with a well chosen <span class="math inline">\(\alpha\)</span> we get a small but noticeable improvement over our best score in the non pruning experiments (0.86 vs 0.85). A one percent improvement might seem very small, but considering that the classification rate is already somewhat high, the absolute number of errors lower by a factor of <span class="math inline">\(\frac{1}{15}\)</span>.</p>
+</section>
+</section>
+<section id="part-3-random-forests" class="level2">
+<h2 class="anchored" data-anchor-id="part-3-random-forests">Part 3: Random Forests</h2>
+<p>One important parameter for a random forest is the maximum depth. Our first experiment will be to find an optimal value for this parameter. We will be using the recommended number of estimators, <span class="math inline">\(\sqrt{d}\)</span>, where <span class="math inline">\(d\)</span> is the number of features. We will be testing both the entropy and gini criteria, and we will be using the same training set size of 75% for the data. By default SKL enables bootstrap sampling, so we will not be explicitly enabling it, and the default value of <span class="math inline">\(n' = n\)</span> will be used, where <span class="math inline">\(n'\)</span> is the number of samples in the bootstrap sample (with replacement) and <span class="math inline">\(n\)</span> is the size of the original training set.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>train, test <span class="op">=</span> read_data.partition_data(read_data.read_data()) </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>num_features <span class="op">=</span> <span class="bu">len</span>(train.columns) <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>num_estimators <span class="op">=</span> <span class="bu">int</span>(np.floor(np.sqrt(num_features)))</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">'''Test various depths, with entropy as the criterion, </span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">store and plot the scores on both training and test sets using matplotlib'''</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_entropy_depths():</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    best_depth <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    best_score <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    test_scores <span class="op">=</span> []</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    training_scores <span class="op">=</span> []</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">30</span>):</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        model <span class="op">=</span> RandomForestClassifier(n_estimators<span class="op">=</span>num_estimators,max_depth<span class="op">=</span>i, random_state<span class="op">=</span><span class="dv">0</span>, criterion<span class="op">=</span><span class="st">"entropy"</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        model.fit(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>])</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        test_scores.append(model.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]))</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        training_scores.append(model.score(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>]))</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> model.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]) <span class="op">&gt;</span> best_score:</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>            best_score <span class="op">=</span> model.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>])</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>            best_depth <span class="op">=</span> i</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">30</span>), test_scores, label<span class="op">=</span><span class="st">'Test'</span>)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">30</span>), training_scores, label<span class="op">=</span><span class="st">'Training'</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    plt.plot(best_depth, best_score, <span class="st">'ro'</span>, label<span class="op">=</span><span class="st">'Best score: '</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_score) <span class="op">+</span> <span class="st">' at depth: '</span> <span class="op">+</span> <span class="bu">str</span>(best_depth))</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"best"</span>)</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Depth'</span>)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Score'</span>)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Entropy, no pruning'</span>)</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    <span class="co">#plt.show()</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    plt.savefig(<span class="st">'rf_entropy_scores_varying_depth.png'</span>)</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    plt.clf()</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="co">'''Test various depths, with gini as the criterion'''</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_gini_depths():</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    best_depth <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    best_score <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    test_scores <span class="op">=</span> []</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    training_scores <span class="op">=</span> []</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">30</span>):</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>        model <span class="op">=</span> RandomForestClassifier(n_estimators<span class="op">=</span>num_estimators,max_depth<span class="op">=</span>i, random_state<span class="op">=</span><span class="dv">0</span>, criterion<span class="op">=</span><span class="st">"gini"</span>)</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>        model.fit(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>])</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>        test_scores.append(model.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]))</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>        training_scores.append(model.score(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>]))</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> model.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]) <span class="op">&gt;</span> best_score:</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>            best_score <span class="op">=</span> model.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>])</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>            best_depth <span class="op">=</span> i</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">30</span>), test_scores, label<span class="op">=</span><span class="st">'Test'</span>)</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">30</span>), training_scores, label<span class="op">=</span><span class="st">'Training'</span>)</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>    plt.plot(best_depth, best_score, <span class="st">'ro'</span>, label<span class="op">=</span><span class="st">'Best score: '</span></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_score) <span class="op">+</span> <span class="st">' at depth: '</span> <span class="op">+</span> <span class="bu">str</span>(best_depth))</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"best"</span>)</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Depth'</span>)</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Score'</span>)</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Gini, no pruning'</span>)</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>    <span class="co">#plt.show()</span></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>    plt.savefig(<span class="st">'rf_gini_scores_varying_depth.png'</span>)</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>    plt.clf()</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>test_entropy_depths()</span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>test_gini_depths()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Running this code gives us the following results:</p>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="figures/rf_entropy_scores_varying_depth.png" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="figures/rf_gini_scores_varying_depth.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<p>We can see that increasing depth is quite beneficial for both criteria, until about depth 10, where the test score stagnates. Again, there doesn’t seem to be significant difference between the two criteria, other than entropy hitting it’s best test score at a somewhat higher depth, but the absolute difference is not very large. We will be using a depth of 15, with a gini criterion, for the rest of the experiments.</p>
+<p>In our next experiment we vary the number of estimators, using the gini criterion and a fixed max depth of 15, as well as the same training set size of 75%. We will be using the default value of <span class="math inline">\(n' = n\)</span> for the bootstrap sample size.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">'''test various number of estimators, with gini as the criterion, depth 15'''</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_gini_estimators():</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    best_num_estimators <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    best_score <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    test_scores <span class="op">=</span> []</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    training_scores <span class="op">=</span> []</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>):</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        model <span class="op">=</span> RandomForestClassifier(n_estimators<span class="op">=</span>i,max_depth<span class="op">=</span><span class="dv">15</span>, random_state<span class="op">=</span><span class="dv">0</span>, criterion<span class="op">=</span><span class="st">"gini"</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        model.fit(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>])</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        test_scores.append(model.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]))</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        training_scores.append(model.score(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>]))</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> model.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]) <span class="op">&gt;</span> best_score:</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>            best_score <span class="op">=</span> model.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>])</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>            best_num_estimators <span class="op">=</span> i</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>), test_scores, label<span class="op">=</span><span class="st">'Test'</span>)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>), training_scores, label<span class="op">=</span><span class="st">'Training'</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    plt.plot(best_num_estimators, best_score, <span class="st">'ro'</span>, label<span class="op">=</span><span class="st">'Best score: '</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_score) <span class="op">+</span> <span class="st">' at num estimators: '</span> <span class="op">+</span> <span class="bu">str</span>(best_num_estimators))</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"best"</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Number of estimators'</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Score'</span>)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Gini, depth 15'</span>)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="co">#plt.show()</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    plt.savefig(<span class="st">'rf_gini_scores_varying_estimators.png'</span>)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    plt.clf()</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>test_gini_estimators()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Running this code gives us the following results:</p>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<p><img src="figures/rf_gini_scores_varying_estimators.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<p>Once again we can see that the model struggles to make predictions when deprived of a resource, and performance quickly climbs as estimators are added. However, we also see performance plateau quite quickly at about 15 estimators. This somewhat aligns with the recommended value of <span class="math inline">\(\sqrt{d}\)</span> estimators, considering that we have <span class="math inline">\(d \approx 1000\)</span> and <span class="math inline">\(\sqrt{d} \approx 32\)</span>.</p>
 </section>
 
 </main>
