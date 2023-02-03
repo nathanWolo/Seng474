@@ -390,13 +390,58 @@ def test_gini_estimators():
 test_gini_estimators()
 
 ```
-
+{{< pagebreak >}}
 Running this code gives us the following results:
 
 ::: {layout-ncol=1}
-![](figures/rf_gini_scores_varying_estimators.png)
+![](figures/rf_gini_scores_varying_estimators.png){width=50%}
 :::
 
 Once again we can see that the model struggles to make predictions when deprived of a resource, and performance quickly climbs as estimators are added. However, we also see performance plateau quite quickly at about 15 estimators. This somewhat aligns with the recommended value of $\sqrt{d}$ estimators, considering that we have $d \approx 1000$ and $\sqrt{d} \approx 32$. Our next step is to test the effect of varying the bootstrap sample size, $n'$, while keeping the number of estimators fixed at 19, and the depth fixed at 15.
 
+
+We use the following code to test the effects of different bootstrap sample sizes:
+
+```python
+
+'''test various bootstrap values, with gini as the criterion, depth 15, 19 estimators'''
+
+def test_gini_bootstrap():
+    best_bootstrap = False
+    best_score = 0
+    test_scores = []
+    training_scores = []
+    for i in range(1,100):
+        model = RandomForestClassifier(n_estimators=19,max_depth=15, random_state=0, criterion="gini", bootstrap=True, max_samples=i/100)
+        model.fit(train.drop(columns=['income']), train['income'])
+        test_scores.append(model.score(test.drop(columns=['income']), test['income']))
+        training_scores.append(model.score(train.drop(columns=['income']), train['income']))
+        if model.score(test.drop(columns=['income']), test['income']) > best_score:
+            best_score = model.score(test.drop(columns=['income']), test['income'])
+            best_bootstrap = i
+    plt.plot(range(1,100), test_scores, label='Test')
+    plt.plot(range(1,100), training_scores, label='Training')
+    plt.plot(best_bootstrap, best_score, 'ro', label='Best score: '
+        + "{:.4f}".format(best_score) + ' at bootstrap: ' + str(best_bootstrap))
+    plt.legend(loc="best")
+    plt.xlabel('Bootstrap')
+    plt.ylabel('Score')
+    plt.title('Gini, depth 15, 19 estimators')
+    #plt.show()
+    plt.savefig('rf_gini_scores_varying_bootstrap.png')
+    plt.clf()
+
+test_gini_bootstrap()
+```
+{{< pagebreak >}}
+Running this code gives us the following results:
+
+::: {layout-ncol=1}
+![](figures/rf_gini_scores_varying_bootstrap.png){width=50%}
+:::
+
+We can see that the performance on the test set quickly increases as we increase bootstrap size from very small values, but then the increase slows down and becomes quite noisy after about 25%. This is likely because we are using an ensemble, and as long as the bootstrap size is not unreasonably small we get diverse enough samples to broadly cover the space and ensure our ensemble has good coverage. This score of 0.86 on test is about the same as a single decision tree with properly tuned hyperparameters, so we can conclude that the ensemble is not adding much value here.
+
+
+## Part 4: Neural Networks
 

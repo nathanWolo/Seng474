@@ -488,7 +488,46 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </div>
-<p>Once again we can see that the model struggles to make predictions when deprived of a resource, and performance quickly climbs as estimators are added. However, we also see performance plateau quite quickly at about 15 estimators. This somewhat aligns with the recommended value of <span class="math inline">\(\sqrt{d}\)</span> estimators, considering that we have <span class="math inline">\(d \approx 1000\)</span> and <span class="math inline">\(\sqrt{d} \approx 32\)</span>.</p>
+<p>Once again we can see that the model struggles to make predictions when deprived of a resource, and performance quickly climbs as estimators are added. However, we also see performance plateau quite quickly at about 15 estimators. This somewhat aligns with the recommended value of <span class="math inline">\(\sqrt{d}\)</span> estimators, considering that we have <span class="math inline">\(d \approx 1000\)</span> and <span class="math inline">\(\sqrt{d} \approx 32\)</span>. Our next step is to test the effect of varying the bootstrap sample size, <span class="math inline">\(n'\)</span>, while keeping the number of estimators fixed at 19, and the depth fixed at 15.</p>
+<p>We use the following code to test the effects of different bootstrap sample sizes:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">'''test various bootstrap values, with gini as the criterion, depth 15, 19 estimators'''</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_gini_bootstrap():</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    best_bootstrap <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    best_score <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    test_scores <span class="op">=</span> []</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    training_scores <span class="op">=</span> []</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,<span class="dv">100</span>):</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        model <span class="op">=</span> RandomForestClassifier(n_estimators<span class="op">=</span><span class="dv">19</span>,max_depth<span class="op">=</span><span class="dv">15</span>, random_state<span class="op">=</span><span class="dv">0</span>, criterion<span class="op">=</span><span class="st">"gini"</span>, bootstrap<span class="op">=</span><span class="va">True</span>, max_samples<span class="op">=</span>i<span class="op">/</span><span class="dv">100</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        model.fit(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>])</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        test_scores.append(model.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]))</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        training_scores.append(model.score(train.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), train[<span class="st">'income'</span>]))</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> model.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>]) <span class="op">&gt;</span> best_score:</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>            best_score <span class="op">=</span> model.score(test.drop(columns<span class="op">=</span>[<span class="st">'income'</span>]), test[<span class="st">'income'</span>])</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>            best_bootstrap <span class="op">=</span> i</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>,<span class="dv">100</span>), test_scores, label<span class="op">=</span><span class="st">'Test'</span>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    plt.plot(<span class="bu">range</span>(<span class="dv">1</span>,<span class="dv">100</span>), training_scores, label<span class="op">=</span><span class="st">'Training'</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    plt.plot(best_bootstrap, best_score, <span class="st">'ro'</span>, label<span class="op">=</span><span class="st">'Best score: '</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_score) <span class="op">+</span> <span class="st">' at bootstrap: '</span> <span class="op">+</span> <span class="bu">str</span>(best_bootstrap))</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"best"</span>)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Bootstrap'</span>)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Score'</span>)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Gini, depth 15, 19 estimators'</span>)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="co">#plt.show()</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    plt.savefig(<span class="st">'rf_gini_scores_varying_bootstrap.png'</span>)</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    plt.clf()</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>test_gini_bootstrap()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Running this code gives us the following results:</p>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<p><img src="figures/rf_gini_scores_varying_bootstrap.png" class="img-fluid"></p>
+</div>
+</div>
+</div>
+<p>We can see that the performance on the test set quickly increases as we increase bootstrap size from very small values, but then the increase slows down and becomes quite noisy after about 25%. This is likely because we are using an ensemble, and as long as the bootstrap size is not unreasonably small we get diverse enough samples to broadly cover the space and ensure our ensemble has good coverage.</p>
 </section>
 
 </main>

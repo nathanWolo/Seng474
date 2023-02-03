@@ -96,4 +96,33 @@ def test_gini_estimators():
     plt.savefig('rf_gini_scores_varying_estimators.png')
     plt.clf()
 
-test_gini_estimators()
+#test_gini_estimators()
+
+'''test various bootstrap values, with gini as the criterion, depth 15, 19 estimators'''
+
+def test_gini_bootstrap():
+    best_bootstrap = False
+    best_score = 0
+    test_scores = []
+    training_scores = []
+    for i in range(1,100):
+        model = RandomForestClassifier(n_estimators=19,max_depth=15, random_state=0, criterion="gini", bootstrap=True, max_samples=i/100)
+        model.fit(train.drop(columns=['income']), train['income'])
+        test_scores.append(model.score(test.drop(columns=['income']), test['income']))
+        training_scores.append(model.score(train.drop(columns=['income']), train['income']))
+        if model.score(test.drop(columns=['income']), test['income']) > best_score:
+            best_score = model.score(test.drop(columns=['income']), test['income'])
+            best_bootstrap = i
+    plt.plot(range(1,100), test_scores, label='Test')
+    plt.plot(range(1,100), training_scores, label='Training')
+    plt.plot(best_bootstrap, best_score, 'ro', label='Best score: '
+        + "{:.4f}".format(best_score) + ' at bootstrap: ' + str(best_bootstrap))
+    plt.legend(loc="best")
+    plt.xlabel('Bootstrap')
+    plt.ylabel('Score')
+    plt.title('Gini, depth 15, 19 estimators')
+    #plt.show()
+    plt.savefig('rf_gini_scores_varying_bootstrap.png')
+    plt.clf()
+
+test_gini_bootstrap()
