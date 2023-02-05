@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.335">
+<meta name="generator" content="quarto-1.2.313">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -480,6 +480,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    plt.clf()</span>
 <span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>test_gini_estimators()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div style="page-break-after: always;"></div>
 <p>Running this code gives us the following results:</p>
 <div class="quarto-layout-panel">
 <div class="quarto-layout-row quarto-layout-valign-top">
@@ -519,6 +520,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    plt.clf()</span>
 <span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>test_gini_bootstrap()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div style="page-break-after: always;"></div>
 <p>Running this code gives us the following results:</p>
 <div class="quarto-layout-panel">
 <div class="quarto-layout-row quarto-layout-valign-top">
@@ -527,7 +529,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </div>
-<p>We can see that the performance on the test set quickly increases as we increase bootstrap size from very small values, but then the increase slows down and becomes quite noisy after about 25%. This is likely because we are using an ensemble, and as long as the bootstrap size is not unreasonably small we get diverse enough samples to broadly cover the space and ensure our ensemble has good coverage.</p>
+<p>We can see that the performance on the test set quickly increases as we increase bootstrap size from very small values, but then the increase slows down and becomes quite noisy after about 25%. This is likely because we are using an ensemble, and as long as the bootstrap size is not unreasonably small we get diverse enough samples to broadly cover the space and ensure our ensemble has good coverage. This score of 0.86 on test is about the same as a single decision tree with properly tuned hyperparameters, so we can conclude that the ensemble is not adding much value here.</p>
+</section>
+<section id="part-4-neural-networks" class="level2">
+<h2 class="anchored" data-anchor-id="part-4-neural-networks">Part 4: Neural Networks</h2>
 </section>
 
 </main>
