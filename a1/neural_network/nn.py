@@ -158,7 +158,13 @@ def train_model(hdim=64, lr=1e-4, epochs=10, batch_size=10, dropout=0.1):
     income_classification_list = list(itertools.chain(*income_classification_list))
     #print(income_classification_list)
     #print(classification_report(y_test[:-6], income_classification_list))
-    final_test_acc = binary_acc(torch.FloatTensor(income_classification_list), torch.FloatTensor(y_test[:-(len(y_test) % batch_size)])).item()/len(y_test[:-(len(y_test) % batch_size)])
+    print(len(y_test))
+    print(batch_size)
+    print(len(y_test[:-(len(y_test) % batch_size)]))
+    if len(y_test[:-(len(y_test) % batch_size)]) != 0:
+        final_test_acc = binary_acc(torch.FloatTensor(income_classification_list), torch.FloatTensor(y_test[:-(len(y_test) % batch_size)])).item()/len(y_test[:-(len(y_test) % batch_size)])
+    else: 
+        final_test_acc = binary_acc(torch.FloatTensor(income_classification_list), torch.FloatTensor(y_test)).item()/len(y_test)
     print("Final train accuracy: ", final_train_acc)
     print("Final test accuracy: ", final_test_acc)
     return final_train_acc, final_test_acc
@@ -189,4 +195,32 @@ def batch_size_test():
     plt.legend(loc="best")
     plt.savefig("nn_batch_size_test.png")
     #plt.show()
-batch_size_test()
+#batch_size_test()
+
+'''Function to test performance on varying number of epochs
+ '''
+
+def epoch_test():
+    epoch_list = [1,2,3,4,5,6,7,8,9,10,20, 40, 80, 160, 320]
+    train_acc_list = []
+    test_acc_list = []
+    best_test_acc = 0
+    best_epoch = 0
+    for epoch in epoch_list:
+        final_train_acc, final_test_acc = train_model(epochs=epoch, batch_size=4)
+        train_acc_list.append(final_train_acc)
+        test_acc_list.append(final_test_acc)
+        if final_test_acc > best_test_acc:
+            best_test_acc = final_test_acc
+            best_epoch = epoch
+    plt.plot(epoch_list, train_acc_list, label="train accuracy")
+    plt.plot(epoch_list, test_acc_list, label="test accuracy")
+    plt.plot(best_epoch, best_test_acc, 'ro', label="best test accuracy: " + 
+            "{:.4f}".format(best_test_acc) + " at epoch: " + str(best_epoch))
+    plt.xlabel("epoch")
+    plt.ylabel("accuracy")
+    plt.legend(loc="best")
+    plt.savefig("nn_epoch_test.png")
+    #plt.show()
+
+epoch_test()
