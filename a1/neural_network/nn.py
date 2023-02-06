@@ -158,7 +158,7 @@ def train_model(hdim=64, lr=1e-4, epochs=10, batch_size=10, dropout=0.1):
     income_classification_list = list(itertools.chain(*income_classification_list))
     #print(income_classification_list)
     #print(classification_report(y_test[:-6], income_classification_list))
-    final_test_acc = binary_acc(torch.FloatTensor(income_classification_list), torch.FloatTensor(y_test[:-6])).item()/len(y_test[:-6])
+    final_test_acc = binary_acc(torch.FloatTensor(income_classification_list), torch.FloatTensor(y_test[:-(len(y_test) % batch_size)])).item()/len(y_test[:-(len(y_test) % batch_size)])
     print("Final train accuracy: ", final_train_acc)
     print("Final test accuracy: ", final_test_acc)
     return final_train_acc, final_test_acc
@@ -168,7 +168,7 @@ def train_model(hdim=64, lr=1e-4, epochs=10, batch_size=10, dropout=0.1):
 '''function to test and plot various batch sizes, with default parameters otherwise'''
 
 def batch_size_test():
-    batch_size_list = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    batch_size_list = [2,3,4,5,7,10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 400, 800]
     train_acc_list = []
     test_acc_list = []
     best_test_acc = 0
