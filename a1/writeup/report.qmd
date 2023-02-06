@@ -7,6 +7,10 @@ format:
 jupyter: python3
 ---
 
+## Preface
+
+This document ended up being quite long in terms of pages, but most of it is figures or code cells. So it shouldn't actually take very long to read over. I wasn't sure whether to include code directly in the report, but I found it easier to speak on the experiments and results when I could refer to the code directly. I hope that's okay. Feel free to skip over the code cells if you want to get to the results faster.
+
 ## Part 1: Processing the data
 
 The first step is to load the data into a pandas dataframe. The data is stored in a csv file, so we can use the read_csv function to load it into a dataframe.
@@ -613,5 +617,323 @@ And running it we get the following result:
 
 So we will fix the batch size at 4 in our next experiments.
 
+Next we vary the size of the hidden layer:
+
+```python
+
+def hdim_test():
+    hdim_list = [2,4,8,16,32,64,128,256,512,1024]
+    train_acc_list = []
+    test_acc_list = []
+    best_test_acc = 0
+    best_hdim = 0
+    for hdim in hdim_list:
+        final_train_acc, final_test_acc = train_model(epochs=1, hdim=hdim, batch_size=4)
+        train_acc_list.append(final_train_acc)
+        test_acc_list.append(final_test_acc)
+        if final_test_acc > best_test_acc:
+            best_test_acc = final_test_acc
+            best_hdim = hdim
+    plt.plot(hdim_list, train_acc_list, label="train accuracy")
+    plt.plot(hdim_list, test_acc_list, label="test accuracy")
+    plt.plot(best_hdim, best_test_acc, 'ro', label="best test accuracy: " + 
+            "{:.4f}".format(best_test_acc) + " at hidden dimension: " + str(best_hdim))
+    plt.xlabel("hidden dimension")
+    plt.ylabel("accuracy")
+    plt.legend(loc="best")
+    plt.savefig("nn_hdim_test.png")
+    #plt.show()
+
+```
+
+And running it we get the following result:
+
+::: layout="center"
+![](figures/nn_hdim_test.png)
+
+:::
+
+This is a pretty weird result! It seems that the best hidden dimension is 2. This is probably because the data is so simple that a single linear layer is enough to classify it. 
+
+Next we vary the learning rate:
+
+```python
+
+def lr_test():
+    lr_list = [0.0001, 0.001, 0.01, 0.1, 1]
+    train_acc_list = []
+    test_acc_list = []
+    best_test_acc = 0
+    best_lr = 0
+    for lr in lr_list:
+        final_train_acc, final_test_acc = train_model(epochs=2, lr=lr, batch_size=4)
+        train_acc_list.append(final_train_acc)
+        test_acc_list.append(final_test_acc)
+        if final_test_acc > best_test_acc:
+            best_test_acc = final_test_acc
+            best_lr = lr
+    plt.plot(lr_list, train_acc_list, label="train accuracy")
+    plt.plot(lr_list, test_acc_list, label="test accuracy")
+    plt.plot(best_lr, best_test_acc, 'ro', label="best test accuracy: " + 
+            "{:.4f}".format(best_test_acc) + " at learning rate: " + str(best_lr))
+    plt.xlabel("learning rate")
+    plt.ylabel("accuracy")
+    plt.legend(loc="best")
+    plt.savefig("nn_lr_test.png")
+    #plt.show()
+
+```
+
+And running it we get the following result:
+
+::: layout="center"
+![](figures/nn_lr_test.png)
+:::
+
+This one is kind of expected, the best learning rate is 0.001, going up is basically monotonically decreasing the accuracy, so the model is likely overshooting at higher learning rates.
+
+Next we vary the dropout rate:
+
+```python
+
+def dropout_test():
+    dropout_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
+    train_acc_list = []
+    test_acc_list = []
+    best_test_acc = 0
+    best_dropout = 0
+    for dropout in dropout_list:
+        final_train_acc, final_test_acc = train_model(epochs=2, dropout=dropout, batch_size=4)
+        train_acc_list.append(final_train_acc)
+        test_acc_list.append(final_test_acc)
+        if final_test_acc > best_test_acc:
+            best_test_acc = final_test_acc
+            best_dropout = dropout
+    plt.plot(dropout_list, train_acc_list, label="train accuracy")
+    plt.plot(dropout_list, test_acc_list, label="test accuracy")
+    plt.plot(best_dropout, best_test_acc, 'ro', label="best test accuracy: " + 
+            "{:.4f}".format(best_test_acc) + " at dropout: " + str(best_dropout))
+    plt.xlabel("dropout")
+    plt.ylabel("accuracy")
+    plt.legend(loc="best")
+    plt.savefig("nn_dropout_test.png")
+    #plt.show()
+
+```
+
+And running it we get the following result:
+
+::: layout="center"
+![](figures/nn_dropout_test.png)
+:::
+
+This is interesting, the best dropout rate is 0.4. Probably because we fixed the width of the hidden layer at 64, when we saw earlier that the best hidden dimension was 2. So the model is probably overfitting, and dropout is helping it generalize.
+
 Next we vary the number of epochs:
+
+```python
+
+def epoch_test():
+    epoch_list = [1,2,3,4,5,6,7,8,9,10]
+    train_acc_list = []
+    test_acc_list = []
+    best_test_acc = 0
+    best_epoch = 0
+    for epoch in epoch_list:
+        final_train_acc, final_test_acc = train_model(epochs=epoch, batch_size=4)
+        train_acc_list.append(final_train_acc)
+        test_acc_list.append(final_test_acc)
+        if final_test_acc > best_test_acc:
+            best_test_acc = final_test_acc
+            best_epoch = epoch
+    plt.plot(epoch_list, train_acc_list, label="train accuracy")
+    plt.plot(epoch_list, test_acc_list, label="test accuracy")
+    plt.plot(best_epoch, best_test_acc, 'ro', label="best test accuracy: " + 
+            "{:.4f}".format(best_test_acc) + " at epoch: " + str(best_epoch))
+    plt.xlabel("epoch")
+    plt.ylabel("accuracy")
+    plt.legend(loc="best")
+    plt.savefig("nn_epoch_test.png")
+    #plt.show()
+```
+
+And running it we get the following result:
+
+::: layout="center"
+![](figures/nn_epoch_test.png)
+
+:::
+
+This is a little surprising. The best number of epochs is 10, which is unintuitive, since earlier we saw signs of overfitting, and more epochs should cause more overfitting. 
+
+
+## Results
+
+It seems like decision trees and random forests perform significantly better than neural networks on this data, as no combination of hyperparameters could get the neural network to perform better than the random forest or pruned decision tree. Between random forests and decision trees, performance is very similar, both achieving a best classification accuracy on test of about 0.86. This is likely because the data lends itself well to decision trees, and the random forest is just a more robust version of the decision tree. The data is tabular, and the encoding is one hot, this makes the logical splitting structure of decision trees much stronger than the neural network. A neural network would likely perform better on a more complex data set, such as images, where the data is not tabular and the encoding is not one hot. Though if the data set were sufficiently large, perhaps multiple orders of magnitude larger than this one, the neural network might be able to match or exceed the performance of the decision tree, as it can learn more complex relationships between the features and the target.
+
+Another important consideration when thinking of applying these methods is training speed, and the ability to scale to larger data sets. The decision tree and random forest are both very fast to train, and can be trained on very large data sets. The neural network is much slower to train, and can only be trained on data sets that fit in memory. This is a very important consideration when thinking about applying machine learning to real world problems, as the data sets are often very large, and the training time must be reasonable. Running on my home computer with a relatively modern CPU and older GPU the training for neural networks of this size took about 10 minutes, while the decision tree and random forest took about 30 seconds. This is a huge difference, and made it more practical to carry out the hyperparameter search for the decision tree and random forest, as it was much faster to train the models.
+
+## Out of Bag Error estimate for Random Forests
+
+Here I implement OOB error estimation for random forests. The code is quite long, so is separated into several functions.
+
+First: we use the kindly provided demo to gather all the samples a certain estimator was not trained on:
+
+```python
+
+
+def get_unsampled_indices(rf, n_samples, n_samples_bootstrap):
+    '''input: 
+    - n_samples is the number of examples
+    - n_samples_bootstrap is the number of samples in each bootstrap sample
+     (this should be equal to n_samples)
+    - rf is a random forest, obtained via a call to
+     RandomForestClassifier(...) in scikit-learn
+    
+    output:
+    unsampled_indices_for_all_trees is a list with one element for each tree
+    in the forest. In more detail, the j'th element is an array of the example
+    indices that were \emph{not} used in the training of j'th tree in the
+    forest. For examle, if the 1st tree in the forest was trained on a
+    bootstrap sample that was missing only the first and seventh training
+    examples (corresponding to indices 0 and 6), and if the last tree in the
+    forest was trained on a boostrap sample that was missing the second,
+    third, and sixth training examples (indices 1, 2, and 5), then
+    unsampled_indices_for_all_trees would begin like:  
+        [array([0, 6]),
+            ...
+        array([1, 2, 5])]
+
+
+    '''
+
+    unsampled_indices_for_all_trees= []
+    for estimator in rf.estimators_:
+        random_instance = check_random_state(estimator.random_state)
+        sample_indices = random_instance.randint(0, n_samples, n_samples_bootstrap)
+        sample_counts = np.bincount(sample_indices, minlength = n_samples)
+        unsampled_mask = sample_counts == 0
+        indices_range = np.arange(n_samples)
+        unsampled_indices = indices_range[unsampled_mask]
+        unsampled_indices_for_all_trees += [unsampled_indices]
+    return unsampled_indices_for_all_trees
+
+```
+
+Then we find all the trees that weren't trained on a particular sample:
+
+```python
+
+def get_trees_not_trained_on_example(rf, n_samples, n_samples_bootstrap, example_index):
+    '''input: 
+    - n_samples is the number of examples
+    - n_samples_bootstrap is the number of samples in each bootstrap sample
+     (this should be equal to n_samples)
+    - rf is a random forest, obtained via a call to
+     RandomForestClassifier(...) in scikit-learn
+    - example_index is an integer in the range [0, n_samples - 1]
+    
+    output:
+    trees_not_trained_on_example is a list of the indices of the trees in the
+    forest that were \emph{not} trained on the example with index
+    example_index. For example, if the 1st tree in the forest was trained on a
+    bootstrap sample that was missing only the first and seventh training
+    examples (corresponding to indices 0 and 6), and if the last tree in the
+    forest was trained on a boostrap sample that was missing the second,
+    third, and sixth training examples (indices 1, 2, and 5), then
+    trees_not_trained_on_example would be [0, 9] (since the 1st and last trees
+    in the forest were not trained on the example with index 3).
+    '''
+
+    unsampled_indices_for_all_trees = get_unsampled_indices(rf, n_samples, n_samples_bootstrap)
+    trees_not_trained_on_example = []
+    for i in range(len(unsampled_indices_for_all_trees)):
+        if example_index in unsampled_indices_for_all_trees[i]:
+            trees_not_trained_on_example += [i]
+    return trees_not_trained_on_example
+
+
+```
+
+Then we get the average prediction of all estimators that weren't trained on a particular sample:
+
+```python
+
+
+def get_average_prediction(rf, n_samples, n_samples_bootstrap, example_index):
+    '''input: 
+    - n_samples is the number of examples
+    - n_samples_bootstrap is the number of samples in each bootstrap sample
+     (this should be equal to n_samples)
+    - rf is a random forest, obtained via a call to
+     RandomForestClassifier(...) in scikit-learn
+    - example_index is an integer in the range [0, n_samples - 1]
+    
+    output:
+    average_prediction is the average prediction of the trees in the forest
+    that were \emph{not} trained on the example with index example_index. For
+    example, if the 1st tree in the forest was trained on a bootstrap sample
+    that was missing only the first and seventh training examples (corresponding
+    to indices 0 and 6), and if the last tree in the forest was trained on a
+    boostrap sample that was missing the second, third, and sixth training
+    examples (indices 1, 2, and 5), then average_prediction would be the
+    average prediction of the 1st and last trees in the forest (since these are
+    the trees that were not trained on the example with index 3).
+    '''
+    print("Example index: ", example_index)
+    trees_not_trained_on_example = get_trees_not_trained_on_example(rf, n_samples, n_samples_bootstrap, example_index)
+    predictions = []
+    for i in trees_not_trained_on_example:
+        predictions += [rf.estimators_[i].predict(X[example_index].reshape(1, -1))[0]]
+    average_prediction = np.mean(predictions)
+    return average_prediction
+
+```
+
+Finally, we can use this to get the OOB error:
+
+```python
+
+
+def get_average_oob_error(rf, n_samples, n_samples_bootstrap):
+    '''input: 
+    - n_samples is the number of examples
+    - n_samples_bootstrap is the number of samples in each bootstrap sample
+     (this should be equal to n_samples)
+    - rf is a random forest, obtained via a call to
+     RandomForestClassifier(...) in scikit-learn
+    
+    output:
+    average_oob_error is the average out-of-bag error of the random forest.
+    '''
+
+    average_oob_error = 0
+    for i in range(n_samples):
+        average_oob_error += (get_average_prediction(rf, n_samples, n_samples_bootstrap, i) != Y[i])
+    average_oob_error /= n_samples
+    return average_oob_error
+
+# print(get_average_oob_error(rf, n_samples, n_samples_bootstrap))
+
+'''Function that plots the oob error for ensembles of different sizes'''
+def plot_oob_error():
+    ensemble_sizes = [ 2, 5, 10, 20, 50, 100]
+    oob_errors = []
+    for i in ensemble_sizes:
+        rf = RandomForestClassifier(n_estimators = i, random_state=0)
+        rf.fit(X, Y)
+        oob_errors.append(get_average_oob_error(rf, n_samples, n_samples_bootstrap))
+    plt.plot(ensemble_sizes, oob_errors)
+    plt.xlabel('Ensemble Size')
+    plt.ylabel('Average OOB Error')
+    # plt.show()
+    plt.savefig('oob_error.png')
+plot_oob_error()
+```
+
+The output of this code is the following plot:
+
+::: layout="center"
+![oob_error](figures/oob_error.png)
+:::
 

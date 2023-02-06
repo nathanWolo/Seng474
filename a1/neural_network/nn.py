@@ -201,7 +201,7 @@ def batch_size_test():
  '''
 
 def epoch_test():
-    epoch_list = [1,2,3,4,5,6,7,8,9,10,20, 40, 80, 160, 320]
+    epoch_list = [1,2,3,4,5,6,7,8,9,10]
     train_acc_list = []
     test_acc_list = []
     best_test_acc = 0
@@ -223,4 +223,109 @@ def epoch_test():
     plt.savefig("nn_epoch_test.png")
     #plt.show()
 
-epoch_test()
+
+'''Function to test performance on varying number of hidden dimensions'''
+
+def hdim_test():
+    hdim_list = [2,4,8,16,32,64,128,256,512,1024]
+    train_acc_list = []
+    test_acc_list = []
+    best_test_acc = 0
+    best_hdim = 0
+    for hdim in hdim_list:
+        final_train_acc, final_test_acc = train_model(epochs=1, hdim=hdim, batch_size=4)
+        train_acc_list.append(final_train_acc)
+        test_acc_list.append(final_test_acc)
+        if final_test_acc > best_test_acc:
+            best_test_acc = final_test_acc
+            best_hdim = hdim
+    plt.plot(hdim_list, train_acc_list, label="train accuracy")
+    plt.plot(hdim_list, test_acc_list, label="test accuracy")
+    plt.plot(best_hdim, best_test_acc, 'ro', label="best test accuracy: " + 
+            "{:.4f}".format(best_test_acc) + " at hidden dimension: " + str(best_hdim))
+    plt.xlabel("hidden dimension")
+    plt.ylabel("accuracy")
+    plt.legend(loc="best")
+    plt.savefig("nn_hdim_test.png")
+    #plt.show()
+
+
+'''function to test and plot various learning rates, with default parameters otherwise'''
+
+def lr_test():
+    lr_list = [0.0001, 0.001, 0.01, 0.1, 1]
+    train_acc_list = []
+    test_acc_list = []
+    best_test_acc = 0
+    best_lr = 0
+    for lr in lr_list:
+        final_train_acc, final_test_acc = train_model(epochs=2, lr=lr, batch_size=4)
+        train_acc_list.append(final_train_acc)
+        test_acc_list.append(final_test_acc)
+        if final_test_acc > best_test_acc:
+            best_test_acc = final_test_acc
+            best_lr = lr
+    plt.plot(lr_list, train_acc_list, label="train accuracy")
+    plt.plot(lr_list, test_acc_list, label="test accuracy")
+    plt.plot(best_lr, best_test_acc, 'ro', label="best test accuracy: " + 
+            "{:.4f}".format(best_test_acc) + " at learning rate: " + str(best_lr))
+    plt.xlabel("learning rate")
+    plt.ylabel("accuracy")
+    plt.legend(loc="best")
+    plt.savefig("nn_lr_test.png")
+    #plt.show()
+
+'''function to test and plot various activation functions, with default parameters otherwise'''
+
+def activation_test():
+    activation_list = ["relu", "sigmoid", "tanh"]
+    train_acc_list = []
+    test_acc_list = []
+    best_test_acc = 0
+    best_activation = 0
+    for activation in activation_list:
+        final_train_acc, final_test_acc = train_model(epochs=2, activation=activation, batch_size=4)
+        train_acc_list.append(final_train_acc)
+        test_acc_list.append(final_test_acc)
+        if final_test_acc > best_test_acc:
+            best_test_acc = final_test_acc
+            best_activation = activation
+    plt.plot(activation_list, train_acc_list, label="train accuracy")
+    plt.plot(activation_list, test_acc_list, label="test accuracy")
+    plt.plot(best_activation, best_test_acc, 'ro', label="best test accuracy: " + 
+            "{:.4f}".format(best_test_acc) + " at activation: " + str(best_activation))
+    plt.xlabel("activation")
+    plt.ylabel("accuracy")
+    plt.legend(loc="best")
+    plt.savefig("nn_activation_test.png")
+    #plt.show()
+
+'''function to test different dropout rates, with default parameters otherwise'''
+
+def dropout_test():
+    dropout_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
+    train_acc_list = []
+    test_acc_list = []
+    best_test_acc = 0
+    best_dropout = 0
+    for dropout in dropout_list:
+        final_train_acc, final_test_acc = train_model(epochs=2, dropout=dropout, batch_size=4)
+        train_acc_list.append(final_train_acc)
+        test_acc_list.append(final_test_acc)
+        if final_test_acc > best_test_acc:
+            best_test_acc = final_test_acc
+            best_dropout = dropout
+    plt.plot(dropout_list, train_acc_list, label="train accuracy")
+    plt.plot(dropout_list, test_acc_list, label="test accuracy")
+    plt.plot(best_dropout, best_test_acc, 'ro', label="best test accuracy: " + 
+            "{:.4f}".format(best_test_acc) + " at dropout: " + str(best_dropout))
+    plt.xlabel("dropout")
+    plt.ylabel("accuracy")
+    plt.legend(loc="best")
+    plt.savefig("nn_dropout_test.png")
+    #plt.show()
+
+#dropout_test()
+#lr_test()
+#hdim_test()
+#epoch_test()
