@@ -1,0 +1,8 @@
+---
+title: "SENG 474: Assignment 2 Report"
+subtitle: "Nathan Woloshyn"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
