@@ -22,8 +22,8 @@ def read_data():
     train_df = pd.DataFrame(np.concatenate((X_train, y_train.reshape(-1, 1)), axis=1))
     test_df = pd.DataFrame(np.concatenate((X_test, y_test.reshape(-1, 1)), axis=1))
 
-    print(train_df.shape)
-    print(test_df.shape)
+    #print(train_df.shape)
+   # print(test_df.shape)
 
     #print(train_df.head())
     return train_df, test_df
@@ -34,14 +34,14 @@ train_df, test_df = read_data()
 
 def filter_data(df):
     df = df[df[784].isin([0, 6])]
-    print(df.shape)
+    #print(df.shape)
     for index, row in df.iterrows():
         if row[784] == 6:
             row[784] = 1
     shuffled_df = df.sample(frac=1)
     return shuffled_df
 
-train_df = filter_data(train_df)
-test_df = filter_data(test_df)
+# train_df = filter_data(train_df)
+# test_df = filter_data(test_df)
 
-print(train_df.head())
+#print(train_df.head())
