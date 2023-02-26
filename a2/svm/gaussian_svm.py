@@ -22,10 +22,12 @@ def plot_error_gaussian_svm_varying_gamme_and_c(gamma_values):
     best_gamma = 0
     c_gammas = []
     for gamma in gamma_values:
-        cur_gamma_c_values = [1.5**i for i in range(-5, 5)]
+        print('gamma: ', gamma)
+        cur_gamma_c_values = [1.5**i for i in range(-2, 3)]
         best_c = 0
         best_c_error = 1
         for c in cur_gamma_c_values:
+            print('c: ', c)
             gs = svm.SVC(C=c, gamma=gamma)
             cur_error = k_fold_cross_validation(folds, gs)
             if cur_error < best_c_error:

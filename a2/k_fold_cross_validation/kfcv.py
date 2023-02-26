@@ -21,9 +21,9 @@ import time
 '''
 
 # Load data
-train_df, test_df = read_data()
-train_df = filter_data(train_df)
-test_df = filter_data(test_df)
+# train_df, test_df = read_data()
+# train_df = filter_data(train_df)
+# test_df = filter_data(test_df)
 
 def k_fold_separation(test_data, k=5):
     '''This function takes in a dataframe and returns a list of dataframes, each of which is a fold of the original dataframe.'''
@@ -34,8 +34,8 @@ def k_fold_separation(test_data, k=5):
         folds.append(test_data.iloc[i*fold_length:(i+1)*fold_length])
     return folds
 
-folds = k_fold_separation(train_df)
-print(len(folds), len(folds[0]))
+# folds = k_fold_separation(train_df)
+# print(len(folds), len(folds[0]))
 
 def k_fold_cross_validation(folds, model):
     '''this function takes in the folds and a SKL model, fits the model on each possible combination of folds and returns the average score of the k folds'''
@@ -46,10 +46,10 @@ def k_fold_cross_validation(folds, model):
         model.fit(training_set.iloc[:, :-1], training_set.iloc[:, -1])
         scores.append(model.score(validation_set.iloc[:, :-1], validation_set.iloc[:, -1]))
     return np.mean(scores)
-lr = lm.LogisticRegression()
-print(k_fold_cross_validation(folds, lr))
-linsvm = svm.LinearSVC()
-print(k_fold_cross_validation(folds, linsvm))
+# lr = lm.LogisticRegression()
+# print(k_fold_cross_validation(folds, lr))
+# linsvm = svm.LinearSVC()
+# print(k_fold_cross_validation(folds, linsvm))
 
 
 def plot_error_logistic_regression_varying_c(c_values):
@@ -72,10 +72,10 @@ def plot_error_logistic_regression_varying_c(c_values):
         + "{:.4f}".format(best_error) + ' at C: ' + "{:.4f}".format(best_c))
    # plt.legend(loc='best')
     plt.savefig("kfcv_logistic_error_vs_C.png")
-start_time = time.perf_counter()
-c_values = [1.5**i for i in range(-10, 10)]
-plot_error_logistic_regression_varying_c(c_values)
-print("Time taken: ", time.perf_counter() - start_time)
+# start_time = time.perf_counter()
+# c_values = [1.5**i for i in range(-10, 10)]
+# plot_error_logistic_regression_varying_c(c_values)
+# print("Time taken: ", time.perf_counter() - start_time)
 
 def plot_error_linear_svm_varying_c(c_values):
     '''This function creates an SKL linear SVM model and plots the error for varying values of the regularization parameter C'''
@@ -99,7 +99,7 @@ def plot_error_linear_svm_varying_c(c_values):
     plt.legend(loc='best')
     plt.savefig("kfcv_linear_svm_error_vs_C.png")
 
-start_time = time.perf_counter()
-c_values = [1.5**i for i in range(-10, 10)]
-plot_error_linear_svm_varying_c(c_values)
-print("Time taken: ", time.perf_counter() - start_time)
+# start_time = time.perf_counter()
+# c_values = [1.5**i for i in range(-10, 10)]
+# plot_error_linear_svm_varying_c(c_values)
+# print("Time taken: ", time.perf_counter() - start_time)
