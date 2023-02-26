@@ -7,3 +7,122 @@ format:
 jupyter: python3
 ---
 
+## Part 1: Loading the Data
+
+In order to use sci-kit learn's implementations of logistic regression and support vector machines, we must load the data into a digestible form. For this, we use a pandas data frame.
+Note: if you are trying to run my code, make sure that the fashionmnist repo is in the folder above the folder containing the code.
+```python
+
+def read_data():
+    X_train, y_train = mnist_reader.load_mnist('../fashionmnist/data/fashion', kind='train')
+    X_test, y_test = mnist_reader.load_mnist('../fashionmnist/data/fashion', kind='t10k')
+    
+    #rescale the pixels to be between 0 and 1
+    X_train = X_train / 255
+    X_test = X_test / 255
+
+    #normalize feature vectors to have euclidean norm 1
+    X_train = X_train / np.linalg.norm(X_train, axis=1).reshape(-1, 1)
+    X_test = X_test / np.linalg.norm(X_test, axis=1).reshape(-1, 1)
+
+    train_df = pd.DataFrame(np.concatenate((X_train, y_train.reshape(-1, 1)), axis=1))
+    test_df = pd.DataFrame(np.concatenate((X_test, y_test.reshape(-1, 1)), axis=1))
+
+    #print(train_df.shape)
+   # print(test_df.shape)
+
+    #print(train_df.head())
+    return train_df, test_df
+
+train_df, test_df = read_data()
+
+'''For this assignment we're only concerned with classes 0 and 6, so we'll drop the rest of the data.'''
+
+def filter_data(df):
+    df = df[df[784].isin([0, 6])]
+    #print(df.shape)
+    for index, row in df.iterrows():
+        if row[784] == 6:
+            row[784] = 1
+    shuffled_df = df.sample(frac=1)
+    return shuffled_df
+    
+```
+
+The read_data function grabs all the information from the fashionmnist data set and puts it into a pandas data frame. The filter_data function takes a data frame and filters it to only contain the classes we are interested in. In this case, we are only interested in classes 0 and 6, so we drop all the other classes. We also shuffle the data frame so that the data is not ordered by class.
+
+## Part 2: Logistic Regression
+
+We use sci-kit learn's implementation of logistic regression to classify the data. We vary the regularization parameter C, according to a logarithmic scale, and plot the accuracy of the model on the training and test data.
+
+```python
+
+def plot_accuracy_vs_C(X_train, y_train, X_test, y_test, C_values):
+    '''A function to plot the accuracy of the model as a function of C.'''
+    accuracies = []
+    best_accuracy = 0
+    best_C = 0
+    for C in C_values:
+        model = lm.LogisticRegression(C=C, multi_class="multinomial", solver="lbfgs", penalty="l2", max_iter=1000)
+        model.fit(X_train, y_train)
+        accuracies.append(model.score(X_test, y_test))
+        if model.score(X_test, y_test) > best_accuracy:
+            best_accuracy = model.score(X_test, y_test)
+            best_C = C
+    plt.plot(C_values, accuracies)
+    plt.plot(best_C, best_accuracy, 'ro', label='Best score: '
+        + "{:.4f}".format(best_accuracy) + ' at C: ' + str(best_C))
+    plt.xlabel("C")
+    plt.xscale("log", base=2)
+    plt.ylabel("Accuracy")
+    plt.legend(loc="best")
+    plt.savefig("logistic_accuracy_vs_C.png")
+
+C_values = [2**i for i in range(-8, 8)]
+plot_accuracy_vs_C(X_train, y_train, X_test, y_test, C_values)
+```
+
+Running the above code produces the following plot:
+
+![](figures/logistic_accuracy_vs_C.png)
+
+We can see that the best accuracy is achieved at C = 1, and the accuracy is 0.8525. 
+
+
+## Part 3: Linear SVM
+
+We use sci-kit learn's implementation of linear SVM to classify the data. We vary the regularization parameter C, according to a logarithmic scale, and plot the accuracy of the model on the training and test data. After a few experiments with different bases for the logarithmic scale, I found that base 1.5 was able to give  the best performance.
+
+```python
+def plot_accuracy_vs_C(X_train, y_train, X_test, y_test, C_values):
+    accuracies = []
+    best_accuracy = 0
+    best_C = 0
+    for C in C_values:
+        model = svm.LinearSVC(C=C, max_iter=10000)
+        model.fit(X_train, y_train)
+        accuracies.append(model.score(X_test, y_test))
+        if model.score(X_test, y_test) > best_accuracy:
+            best_accuracy = model.score(X_test, y_test)
+            best_C = C
+    plt.plot(C_values, accuracies)
+    plt.plot(best_C, best_accuracy, 'ro', label='Best score: '
+        + "{:.4f}".format(best_accuracy) + ' at C: ' + str(best_C))
+    plt.xlabel("C")
+    plt.xscale("log", base=1.5)
+    plt.ylabel("Accuracy")
+    plt.legend(loc="best")
+    plt.savefig("lin_svm_accuracy_vs_C.png")
+
+C_values = [1.5**i for i in range(-8, 8)]
+plot_accuracy_vs_C(X_train, y_train, X_test, y_test, C_values)
+```
+
+Running the above code produces the following plot:
+
+![](figures/lin_svm_accuracy_vs_C.png)
+
+Our best accuracy is achieved at  $C \approx 0.2$, and the accuracy is 0.8510. Slightly worse than the logistic regression model, but very close.
+
+## Part 4: K Fold Cross Validation
+
