@@ -126,3 +126,110 @@ Our best accuracy is achieved at  $C \approx 0.2$, and the accuracy is 0.8510. S
 
 ## Part 4: K Fold Cross Validation
 
+We implement K fold cross validation from scratch, and use it to find the best regularization value $C$ for both the logistic regression and linear SVM models. We use a logarithmic scale for $C$, with base 1.5. We use 5 folds for the cross validation.
+
+First, we partition the data into 5 folds. Then we write a function to train the model on each possible selection of validation fold, and return the average accuracy of the model on the validation folds. Then we write a function to find the best $C$ value by iterating over a range of $C$ values, and finding the $C$ value that gives the best average accuracy.
+
+```python
+
+def k_fold_separation(test_data, k=5):
+    '''This function takes in a dataframe and returns a list of dataframes, each of which is a fold of the original dataframe.'''
+    test_data_length = len(test_data)
+    fold_length = test_data_length // k
+    folds = []
+    for i in range(k):
+        folds.append(test_data.iloc[i*fold_length:(i+1)*fold_length])
+    return folds
+
+def k_fold_cross_validation(folds, model):
+    '''this function takes in the folds and a SKL model, fits the model on each possible combination of folds and returns the average score of the k folds'''
+    scores = []
+    for i in range(len(folds)):
+        validation_set = folds[i]
+        training_set = pd.concat(folds[:i] + folds[i+1:])
+        model.fit(training_set.iloc[:, :-1], training_set.iloc[:, -1])
+        scores.append(model.score(validation_set.iloc[:, :-1], validation_set.iloc[:, -1]))
+    return np.mean(scores)
+
+
+def plot_error_logistic_regression_varying_c(c_values):
+    '''This function creates an SKL logistic regression model and plots the error for varying values of the regularization parameter C'''
+    folds = k_fold_separation(train_df)
+    errors = []
+    best_error = 1
+    best_c = 1
+    for c in c_values:
+        lr = lm.LogisticRegression(C=c)
+        errors.append(1 - k_fold_cross_validation(folds, lr))
+        if 1 - k_fold_cross_validation(folds, lr) < best_error:
+            best_error = 1 - k_fold_cross_validation(folds, lr)
+            best_c = c
+    plt.plot(c_values, errors, label='Logistic Regression')
+    plt.xscale("log", base=1.5)
+    plt.xlabel("C")
+    plt.ylabel("Error")
+    plt.plot(best_c, best_error, 'ro', label='Best error LR: '
+        + "{:.4f}".format(best_error) + ' at C: ' + "{:.4f}".format(best_c))
+
+def plot_error_linear_svm_varying_c(c_values):
+    '''This function creates an SKL linear SVM model and plots the error for varying values of the regularization parameter C'''
+    folds = k_fold_separation(train_df)
+    errors = []
+    best_error = 1
+    best_c = 1
+    for c in c_values:
+        linsvm = svm.LinearSVC(C=c)
+        errors.append(1 - k_fold_cross_validation(folds, linsvm))
+        if 1 - k_fold_cross_validation(folds, linsvm) < best_error:
+            best_error = 1 - k_fold_cross_validation(folds, linsvm)
+            best_c = c
+    plt.plot(c_values, errors, label='Linear SVM')
+    plt.plot(best_c, best_error, 'ro', label='Best error SVM: '
+        + "{:.4f}".format(best_error) + ' at C: ' + "{:.4f}".format(best_c))
+    plt.legend(loc='best')
+    plt.savefig("kfcv_linear_svm_error_vs_C.png")
+```
+
+Running all of the above code produces the following plot:
+
+![](figures/kfcv_linear_svm_error_vs_C.png)
+
+According to this, the optimal value of $C$ for the logistic regression model is  $C \approx 7.5$, and the optimal value of $C$ for the linear SVM model is  $C \approx 0.67$. So now we can finally train our models on the entire training set, and evaluate them on the test set, using these optimal values of $C$.
+
+```python
+
+train_df, test_df = read_data()
+
+train_df = filter_data(train_df)
+test_df = filter_data(test_df)
+
+X_train = train_df.iloc[:, :-1]
+y_train = train_df.iloc[:, -1]
+
+X_test = test_df.iloc[:, :-1]
+y_test = test_df.iloc[:, -1]
+
+linsvm = svm.LinearSVC(C=0.6667)
+
+logreg = lm.LogisticRegression(C=7.5938)
+
+linsvm.fit(X_train, y_train)
+
+logreg.fit(X_train, y_train)
+
+print("Linear SVM accuracy: ", linsvm.score(X_test, y_test))
+
+print("Logistic Regression accuracy: ", logreg.score(X_test, y_test))
+```
+
+Which produces the following output:
+```
+Linear SVM accuracy:  0.847
+Logistic Regression accuracy:  0.8475
+```
+
+This shows that when optimally parameterized, the linear SVM and logistic regression models perform very similarly on the test set. The logistic regression model is slightly better, with an accuracy of 0.8475, compared to 0.847 for the linear SVM model, but this could easily be noise.
+
+
+## Part 5: Nonlinear SVM
+

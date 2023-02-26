@@ -223,7 +223,102 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>plot_accuracy_vs_C(X_train, y_train, X_test, y_test, C_values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Running the above code produces the following plot:</p>
 <p><img src="figures/lin_svm_accuracy_vs_C.png" class="img-fluid"></p>
-<p>Our best accuracy is achieved at <span class="math inline">\(C \approx 0.2\)</span></p>
+<p>Our best accuracy is achieved at <span class="math inline">\(C \approx 0.2\)</span>, and the accuracy is 0.8510. Slightly worse than the logistic regression model, but very close.</p>
+</section>
+<section id="part-4-k-fold-cross-validation" class="level2">
+<h2 class="anchored" data-anchor-id="part-4-k-fold-cross-validation">Part 4: K Fold Cross Validation</h2>
+<p>We implement K fold cross validation from scratch, and use it to find the best regularization value <span class="math inline">\(C\)</span> for both the logistic regression and linear SVM models. We use a logarithmic scale for <span class="math inline">\(C\)</span>, with base 1.5. We use 5 folds for the cross validation.</p>
+<p>First, we partition the data into 5 folds. Then we write a function to train the model on each possible selection of validation fold, and return the average accuracy of the model on the validation folds. Then we write a function to find the best <span class="math inline">\(C\)</span> value by iterating over a range of <span class="math inline">\(C\)</span> values, and finding the <span class="math inline">\(C\)</span> value that gives the best average accuracy.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> k_fold_separation(test_data, k<span class="op">=</span><span class="dv">5</span>):</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''This function takes in a dataframe and returns a list of dataframes, each of which is a fold of the original dataframe.'''</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    test_data_length <span class="op">=</span> <span class="bu">len</span>(test_data)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    fold_length <span class="op">=</span> test_data_length <span class="op">//</span> k</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    folds <span class="op">=</span> []</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(k):</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        folds.append(test_data.iloc[i<span class="op">*</span>fold_length:(i<span class="op">+</span><span class="dv">1</span>)<span class="op">*</span>fold_length])</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> folds</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> k_fold_cross_validation(folds, model):</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''this function takes in the folds and a SKL model, fits the model on each possible combination of folds and returns the average score of the k folds'''</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> []</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(folds)):</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        validation_set <span class="op">=</span> folds[i]</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        training_set <span class="op">=</span> pd.concat(folds[:i] <span class="op">+</span> folds[i<span class="op">+</span><span class="dv">1</span>:])</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        model.fit(training_set.iloc[:, :<span class="op">-</span><span class="dv">1</span>], training_set.iloc[:, <span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        scores.append(model.score(validation_set.iloc[:, :<span class="op">-</span><span class="dv">1</span>], validation_set.iloc[:, <span class="op">-</span><span class="dv">1</span>]))</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.mean(scores)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_error_logistic_regression_varying_c(c_values):</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''This function creates an SKL logistic regression model and plots the error for varying values of the regularization parameter C'''</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    folds <span class="op">=</span> k_fold_separation(train_df)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    errors <span class="op">=</span> []</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    best_error <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    best_c <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> c <span class="kw">in</span> c_values:</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>        lr <span class="op">=</span> lm.LogisticRegression(C<span class="op">=</span>c)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>        errors.append(<span class="dv">1</span> <span class="op">-</span> k_fold_cross_validation(folds, lr))</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="dv">1</span> <span class="op">-</span> k_fold_cross_validation(folds, lr) <span class="op">&lt;</span> best_error:</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>            best_error <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> k_fold_cross_validation(folds, lr)</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>            best_c <span class="op">=</span> c</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    plt.plot(c_values, errors, label<span class="op">=</span><span class="st">'Logistic Regression'</span>)</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    plt.xscale(<span class="st">"log"</span>, base<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">"C"</span>)</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">"Error"</span>)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    plt.plot(best_c, best_error, <span class="st">'ro'</span>, label<span class="op">=</span><span class="st">'Best error LR: '</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_error) <span class="op">+</span> <span class="st">' at C: '</span> <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_c))</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_error_linear_svm_varying_c(c_values):</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''This function creates an SKL linear SVM model and plots the error for varying values of the regularization parameter C'''</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>    folds <span class="op">=</span> k_fold_separation(train_df)</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>    errors <span class="op">=</span> []</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>    best_error <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>    best_c <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> c <span class="kw">in</span> c_values:</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>        linsvm <span class="op">=</span> svm.LinearSVC(C<span class="op">=</span>c)</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>        errors.append(<span class="dv">1</span> <span class="op">-</span> k_fold_cross_validation(folds, linsvm))</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="dv">1</span> <span class="op">-</span> k_fold_cross_validation(folds, linsvm) <span class="op">&lt;</span> best_error:</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>            best_error <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> k_fold_cross_validation(folds, linsvm)</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>            best_c <span class="op">=</span> c</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>    plt.plot(c_values, errors, label<span class="op">=</span><span class="st">'Linear SVM'</span>)</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>    plt.plot(best_c, best_error, <span class="st">'ro'</span>, label<span class="op">=</span><span class="st">'Best error SVM: '</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_error) <span class="op">+</span> <span class="st">' at C: '</span> <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_c))</span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">'best'</span>)</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>    plt.savefig(<span class="st">"kfcv_linear_svm_error_vs_C.png"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Running all of the above code produces the following plot:</p>
+<p><img src="figures/kfcv_linear_svm_error_vs_C.png" class="img-fluid"></p>
+<p>According to this, the optimal value of <span class="math inline">\(C\)</span> for the logistic regression model is <span class="math inline">\(C \approx 7.5\)</span>, and the optimal value of <span class="math inline">\(C\)</span> for the linear SVM model is <span class="math inline">\(C \approx 0.67\)</span>. So now we can finally train our models on the entire training set, and evaluate them on the test set, using these optimal values of <span class="math inline">\(C\)</span>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> read_data()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>train_df <span class="op">=</span> filter_data(train_df)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>test_df <span class="op">=</span> filter_data(test_df)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> train_df.iloc[:, :<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> train_df.iloc[:, <span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> test_df.iloc[:, :<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> test_df.iloc[:, <span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>linsvm <span class="op">=</span> svm.LinearSVC(C<span class="op">=</span><span class="fl">0.6667</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>logreg <span class="op">=</span> lm.LogisticRegression(C<span class="op">=</span><span class="fl">7.5938</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>linsvm.fit(X_train, y_train)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>logreg.fit(X_train, y_train)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Linear SVM accuracy: "</span>, linsvm.score(X_test, y_test))</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Logistic Regression accuracy: "</span>, logreg.score(X_test, y_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Which produces the following output:</p>
+<pre><code>Linear SVM accuracy:  0.847
+Logistic Regression accuracy:  0.8475</code></pre>
+<p>This shows that when optimally parameterized, the linear SVM and logistic regression models perform very similarly on the test set. The logistic regression model is slightly better, with an accuracy of 0.8475, compared to 0.847 for the linear SVM model, but this could easily be noise.</p>
+</section>
+<section id="part-5-nonlinear-svm" class="level2">
+<h2 class="anchored" data-anchor-id="part-5-nonlinear-svm">Part 5: Nonlinear SVM</h2>
 </section>
 
 </main>
