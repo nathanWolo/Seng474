@@ -316,6 +316,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>Linear SVM accuracy:  0.847
 Logistic Regression accuracy:  0.8475</code></pre>
 <p>This shows that when optimally parameterized, the linear SVM and logistic regression models perform very similarly on the test set. The logistic regression model is slightly better, with an accuracy of 0.8475, compared to 0.847 for the linear SVM model, but this could easily be noise.</p>
+<p>We can calculate 95% confidence intervals for the accuracy of the models, using the following formula:</p>
+<p><span class="math display">\[\hat{p} \pm 1.96 \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}\]</span></p>
+<p>where <span class="math inline">\(\hat{p}\)</span> is the accuracy of the model, and <span class="math inline">\(n\)</span> is the number of samples in the test set. We can calculate the accuracy of the models as follows:</p>
+<p>This comes out to <span class="math inline">\(0.847 \pm 0.0158\)</span> for the linear SVM model, and <span class="math inline">\(0.8475 \pm 0.0158\)</span> for the logistic regression model. This shows that the difference between the two models is not significant, and that there is significant overlap between the 95% confidence intervals of the two models.</p>
 </section>
 <section id="part-5-nonlinear-svm" class="level2">
 <h2 class="anchored" data-anchor-id="part-5-nonlinear-svm">Part 5: Nonlinear SVM</h2>
@@ -376,6 +380,7 @@ Logistic Regression accuracy:  0.8475</code></pre>
 <span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>plot_error_gaussian_svm_varying_gamme_and_c(gamma_values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>First we choose a list of <span class="math inline">\(\gamma\)</span> values to test, and then for each <span class="math inline">\(\gamma\)</span> we test a range of <span class="math inline">\(C_\gamma\)</span> values. We then use k fold cross validation to find the optimal <span class="math inline">\(C_\gamma\)</span> value for each <span class="math inline">\(\gamma\)</span>, and then train a model on the entire training set using the optimal <span class="math inline">\(C_\gamma\)</span> value, and evaluate it on the test set. We then plot the test set accuracy for each <span class="math inline">\(\gamma\)</span> value. The code for this is shown above. The plot produced by this code is shown below:</p>
 <p><img src="figures/error_vs_gamma.png" class="img-fluid"></p>
+<p>According to this, the optimal value of <span class="math inline">\(\gamma\)</span> is <span class="math inline">\(\gamma \approx 7.5\)</span>, and this achieves an accuracy of 0.884 on the test set, which is better than the linear SVM and logistic regression models, which both achieve about 0.85 accuracy - this means that the Gaussian kernel SVM makes about 20% fewer errors than the linear classifiers! It is possible that an even stronger nonlinear classifier could be achieved with a more extensive search for the optimal <span class="math inline">\(\gamma\)</span> value, but this would take a long time to run, running the above code took quite some a while on my laptop and had to be left running overnight.</p>
 </section>
 
 </main>

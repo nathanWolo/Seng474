@@ -230,6 +230,13 @@ Logistic Regression accuracy:  0.8475
 
 This shows that when optimally parameterized, the linear SVM and logistic regression models perform very similarly on the test set. The logistic regression model is slightly better, with an accuracy of 0.8475, compared to 0.847 for the linear SVM model, but this could easily be noise.
 
+We can calculate 95% confidence intervals for the accuracy of the models, using the following formula:
+
+$$\hat{p} \pm 1.96 \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$$
+
+where $\hat{p}$ is the accuracy of the model, and $n$ is the number of samples in the test set. We can calculate the accuracy of the models as follows:
+
+This comes out to $0.847 \pm 0.0158$ for the linear SVM model, and $0.8475 \pm 0.0158$ for the logistic regression model. This shows that the difference between the two models is not significant, and that there is significant overlap between the 95% confidence intervals of the two models.
 
 ## Part 5: Nonlinear SVM
 
@@ -301,3 +308,6 @@ plot_error_gaussian_svm_varying_gamme_and_c(gamma_values)
 First we choose a list of $\gamma$ values to test, and then for each $\gamma$ we test a range of $C_\gamma$ values. We then use k fold cross validation to find the optimal $C_\gamma$ value for each $\gamma$, and then train a model on the entire training set using the optimal $C_\gamma$ value, and evaluate it on the test set. We then plot the test set accuracy for each $\gamma$ value. The code for this is shown above. The plot produced by this code is shown below:
 
 ![](figures/error_vs_gamma.png)
+
+According to this, the optimal value of $\gamma$ is $\gamma \approx 7.5$, and this achieves an accuracy of 0.884 on the test set, which is better than the linear SVM and logistic regression models, which both achieve about 0.85 accuracy - this means that the Gaussian kernel SVM makes about 20% fewer errors than the linear classifiers! It is possible that an even stronger nonlinear classifier could be achieved with a more extensive search for the optimal $\gamma$ value, but this would take a long time to run, running the above code took quite some a while on my laptop and had to be left running overnight.
+
