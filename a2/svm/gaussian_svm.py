@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import time
 train_df, test_df = read_data()
 
-train_df = filter_data(train_df).sample(frac=1, random_state=1234)
+train_df = filter_data(train_df)
 test_df = filter_data(test_df)
 
 folds = k_fold_separation(train_df)

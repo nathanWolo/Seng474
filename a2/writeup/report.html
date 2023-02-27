@@ -319,6 +319,63 @@ Logistic Regression accuracy:  0.8475</code></pre>
 </section>
 <section id="part-5-nonlinear-svm" class="level2">
 <h2 class="anchored" data-anchor-id="part-5-nonlinear-svm">Part 5: Nonlinear SVM</h2>
+<p>Going beyond linear classifiers, we introduce a kernel SVM model, which is a nonlinear classifier. We use the Gaussian kernel, which is defined as follows:</p>
+<p><span class="math display">\[K_u(d(x_u, x)) = e^{
+    \frac{1}{2\sigma_u^2}d^2(x_u, x)
+}\]</span></p>
+<p>We re use our previous implementation of the K fold cross validation, and use it to find the best values of the regularization parameter <span class="math inline">\(C\)</span> and the kernel parameter <span class="math inline">\(\sigma\)</span>. We use a logarithmic scale for <span class="math inline">\(C\)</span>, with base 1.5, and a logarithmic scale for <span class="math inline">\(\sigma\)</span>, with base 2. We use 5 folds for the cross validation.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>train_df <span class="op">=</span> filter_data(train_df)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>test_df <span class="op">=</span> filter_data(test_df)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>folds <span class="op">=</span> k_fold_separation(train_df)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_error_gaussian_svm_varying_gamme_and_c(gamma_values):</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">''' This function creates an SKL gaussian SVM model and plots the error for varying values of the scale parameter gamma.</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">    For each gamma, we will use k fold cross validation to find an optimal C_gamma value. We will then use the optimal C_gamma</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">    To train on the entire training set and evaluate on the test set. We will then plot the test set error for each gamma value.'''</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    accuracies <span class="op">=</span> []</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    best_acc <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    best_gamma <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    c_gammas <span class="op">=</span> []</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> gamma <span class="kw">in</span> gamma_values:</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        start_time <span class="op">=</span> time.perf_counter()</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">'gamma: '</span>, gamma)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        cur_gamma_c_values <span class="op">=</span> [<span class="fl">1.5</span><span class="op">**</span>i <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="op">-</span><span class="dv">5</span>, <span class="dv">8</span>)]</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        best_c <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        best_c_score <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> c <span class="kw">in</span> cur_gamma_c_values:</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="st">'c: '</span>, c)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>            gs <span class="op">=</span> svm.SVC(C<span class="op">=</span>c, gamma<span class="op">=</span>gamma)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>            cur_c_score <span class="op">=</span> k_fold_cross_validation(folds, gs)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> cur_c_score <span class="op">&gt;</span> best_c_score:</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>                best_c_score <span class="op">=</span> cur_c_score</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>                best_c <span class="op">=</span> c</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>        c_gammas.append(best_c)</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(best_c)</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>        gs <span class="op">=</span> svm.SVC(C<span class="op">=</span>best_c, gamma<span class="op">=</span>gamma)</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>        gs.fit(train_df.iloc[:, :<span class="op">-</span><span class="dv">1</span>], train_df.iloc[:, <span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>        cur_gamma_score <span class="op">=</span> gs.score(test_df.iloc[:, :<span class="op">-</span><span class="dv">1</span>], test_df.iloc[:, <span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>        accuracies.append(cur_gamma_score)</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(time.perf_counter() <span class="op">-</span> start_time)</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> cur_gamma_score <span class="op">&gt;</span> best_acc:</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>            best_acc <span class="op">=</span> cur_gamma_score</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>            best_gamma <span class="op">=</span> gamma</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    plt.plot(gamma_values, accuracies)</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Gamma'</span>)</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    plt.xscale(<span class="st">'log'</span>, base<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'accuracy'</span>)</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Error vs Gamma'</span>)</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    plt.plot(best_gamma, best_acc, <span class="st">'ro'</span>, label<span class="op">=</span><span class="st">'Best score: '</span></span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_acc) <span class="op">+</span> <span class="st">' at gamma: '</span> <span class="op">+</span> <span class="st">"</span><span class="sc">{:.4f}</span><span class="st">"</span>.<span class="bu">format</span>(best_gamma))</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">'best'</span>)</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>    plt.savefig(<span class="st">'error_vs_gamma.png'</span>)</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>gamma_values <span class="op">=</span> [(<span class="fl">1.5</span><span class="op">**</span>i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="op">-</span><span class="dv">3</span>, <span class="dv">8</span>)]</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>plot_error_gaussian_svm_varying_gamme_and_c(gamma_values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>First we choose a list of <span class="math inline">\(\gamma\)</span> values to test, and then for each <span class="math inline">\(\gamma\)</span> we test a range of <span class="math inline">\(C_\gamma\)</span> values. We then use k fold cross validation to find the optimal <span class="math inline">\(C_\gamma\)</span> value for each <span class="math inline">\(\gamma\)</span>, and then train a model on the entire training set using the optimal <span class="math inline">\(C_\gamma\)</span> value, and evaluate it on the test set. We then plot the test set accuracy for each <span class="math inline">\(\gamma\)</span> value. The code for this is shown above. The plot produced by this code is shown below:</p>
+<p><img src="figures/error_vs_gamma.png" class="img-fluid"></p>
 </section>
 
 </main>
