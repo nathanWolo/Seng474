@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>SENG 474: Assignment 3 Report</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="report_files/libs/clipboard/clipboard.min.js"></script>
+<script src="report_files/libs/quarto-html/quarto.js"></script>
+<script src="report_files/libs/quarto-html/popper.min.js"></script>
+<script src="report_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="report_files/libs/quarto-html/anchor.min.js"></script>
+<link href="report_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="report_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="report_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="report_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">SENG 474: Assignment 3 Report</h1>
+<p class="subtitle lead">Nathan Woloshyn</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Clustering algorithms are unsupervised machine learning techniques that aim to partition a dataset into groups or clusters, based on the similarity between data points. These algorithms are widely used in various domains, such as pattern recognition, image processing, market segmentation, and anomaly detection.</p>
+<p>In this assignment, we will explore and analyze the performance of four clustering methods on two provided datasets. The clustering methods include two variants of Lloyd’s algorithm (k-means) with different initialization strategies, and two variants of hierarchical agglomerative clustering with different linkage criteria.</p>
+<p>Specifically, we will implement Lloyd’s algorithm with uniform random initialization and k-means++ initialization. For hierarchical agglomerative clustering, we will use Euclidean distance as the dissimilarity measure and employ both single linkage and average linkage as clustering criteria. Our goal is to compare the performance of these methods and gain insights into the characteristics of the datasets and the clustering results.</p>
+</section>
+<section id="section-1-lloyds-algorithm-methods" class="level1">
+<h1>Section 1: Lloyd’s Algorithm Methods</h1>
+<section id="implementation" class="level2">
+<h2 class="anchored" data-anchor-id="implementation">Implementation</h2>
+<p>The implementation of the clustering methods is divided into two main sections: Lloyd’s algorithm with uniform random initialization and k-means++ initialization. In both cases, Python and the NumPy library were used to perform the required calculations efficiently.</p>
+<section id="lloyds-algorithm-with-uniform-random-initialization" class="level3">
+<h3 class="anchored" data-anchor-id="lloyds-algorithm-with-uniform-random-initialization">Lloyd’s Algorithm with Uniform Random Initialization</h3>
+<p>The first step in the implementation of the random initialization method was to define a function that calculates the Euclidean distance between two points in n-dimensional space. The <code>euclidean_distance</code> function was created for this purpose, using NumPy’s <code>linalg.norm</code> function.</p>
+<p>Next, the <code>random_initialization</code> function was implemented to provide a uniform random initialization strategy for the cluster centroids. This function selects k centroids uniformly at random from the dataset.</p>
+<p>Finally, the primary function, <code>kmeans_clustering</code>, was implemented to run the k-means algorithm on the given data using the specified initialization method. The algorithm iteratively assigns each data point to the nearest centroid, updates the centroids based on the mean of the assigned points, and checks for convergence using a tolerance value. If the algorithm does not converge within the maximum number of iterations (for this assignment, 100 was chosen as the maximum), it prints a warning message.</p>
+</section>
+<section id="lloyds-algorithm-with-k-means-initialization" class="level3">
+<h3 class="anchored" data-anchor-id="lloyds-algorithm-with-k-means-initialization">Lloyd’s Algorithm with k-means++ Initialization</h3>
+<p>For the k-means++ initialization, the <code>kmeans_plus_plus_initialization</code> function was implemented. This function selects the first centroid uniformly at random from the dataset and then selects the remaining centroids based on their squared distances to the closest existing centroid. The probabilities of choosing a data point as the next centroid are proportional to these squared distances.</p>
+<p>The <code>kmeans_clustering</code> function was also used to run the k-means algorithm with the k-means++ initialization method.</p>
+</section>
+</section>
+<section id="experiments-and-visualization" class="level2">
+<h2 class="anchored" data-anchor-id="experiments-and-visualization">Experiments and Visualization</h2>
+<p>To evaluate the performance of the clustering algorithms, a series of experiments were run on two datasets using different values of k. The <code>run_kmeans_experiment</code> function was implemented to run the k-means clustering algorithm with different values of k and initialization methods on a given dataset. The clustering results were then visualized using 2D or 3D scatter plots generated by the <code>plot_clusters</code> function, where each cluster is represented by a different color and centroid markers are represented by black ‘x’ symbols.</p>
+<p>The cost of the clustering solutions, calculated as the sum of squared Euclidean distances between data points and their assigned centroids, was plotted against the number of clusters (k) using the <code>plot_cost_vs_k</code> function. This function creates a line plot to compare the costs of k-means clustering with random initialization and k-means++ initialization for different values of k. Additionally, the <code>plot_iterations_vs_k</code> function was implemented to visualize the number of iterations required for convergence as a function of k for both initialization methods.</p>
+<p>Below are some example clusterings, as well as the cost and number of iterations plots, for the two datasets.</p>
+<section id="dataset-1" class="level3">
+<h3 class="anchored" data-anchor-id="dataset-1">Dataset 1</h3>
+<section id="clusterings" class="level4">
+<h4 class="anchored" data-anchor-id="clusterings">Clusterings</h4>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<p><img src="figs/clusters_dataset1_k_2_k-means++.png" class="img-fluid" style="width:40.0%" alt="Dataset 1 Clusterings-1"> <img src="figs/clusters_dataset1_k_3_random.png" class="img-fluid" style="width:40.0%" alt="Dataset 1 Clusterings-2"> <img src="figs/clusters_dataset1_k_7_k-means++.png" class="img-fluid" style="width:40.0%" alt="Dataset 1 Clusterings-3"> <img src="figs/clusters_dataset1_k_7_random.png" class="img-fluid" style="width:40.0%" alt="Dataset 1 Clusterings-4"></p>
+</div>
+</div>
+</div>
+<p>As can be observed in the two k=7 figures, the two initialization methods produce very similar clusterings. This similarity in performance is expected, as the data points being clustered are randomly generated and both methods are capable of effectively partitioning the dataset.</p>
+</section>
+<section id="cost-vs.-k" class="level4">
+<h4 class="anchored" data-anchor-id="cost-vs.-k">Cost vs.&nbsp;k</h4>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cost_vs_k_dataset1.png" class="img-fluid figure-img" style="width:60.0%"></p>
+<p></p><figcaption class="figure-caption">Dataset 1 Cost vs.&nbsp;k</figcaption><p></p>
+</figure>
+</div>
+<p>The cost vs.&nbsp;k plot illustrates the relationship between the number of clusters (k) and the sum of squared Euclidean distances between data points and their assigned centroids. As the value of k increases, the cost generally decreases due to the data points being more closely grouped around their respective centroids. However, the rate of decrease tapers off as k becomes larger, indicating diminishing returns for increasing k. Both initialization methods, random and k-means++, show the same trends in cost reduction, suggesting that their performance in partitioning Dataset 1 is comparable. This observation further supports the idea that both methods are effective at clustering the randomly generated data points in this dataset. Both methods are plotted here, but because their cost values are so similar it is difficult to distinguish the two lines.</p>
+</section>
+<section id="iterations-vs.-k" class="level4">
+<h4 class="anchored" data-anchor-id="iterations-vs.-k">Iterations vs.&nbsp;k</h4>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/iterations_vs_k_dataset1.png" class="img-fluid figure-img" style="width:60.0%"></p>
+<p></p><figcaption class="figure-caption">Dataset 1 Iterations vs.&nbsp;k</figcaption><p></p>
+</figure>
+</div>
+<p>The iterations vs.&nbsp;k plot reveals the number of iterations required for the k-means algorithm to converge for different values of k and initialization methods. The relationship appears noisy, but a noticeable trend emerges where k-means++ initialization generally converges faster than random initialization, particularly at higher values of k. Furthermore, k-means++ never reaches the iteration limit of 100, while random initialization does so twice. This result indicates that the k-means++ initialization method has an advantage in terms of convergence speed, especially when using larger values of k. Faster convergence can lead to more efficient clustering, highlighting the benefits of using the k-means++ initialization method over random initialization.</p>
+</section>
+</section>
+<section id="dataset-2" class="level3">
+<h3 class="anchored" data-anchor-id="dataset-2">Dataset 2</h3>
+<section id="clusterings-1" class="level4">
+<h4 class="anchored" data-anchor-id="clusterings-1">Clusterings</h4>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
+<p><img src="figs/clusters_dataset2_k_3_k-means++.png" class="img-fluid" style="width:40.0%" alt="Dataset 2 Clusterings-1"> <img src="figs/clusters_dataset2_k_3_random.png" class="img-fluid" style="width:40.0%" alt="Dataset 2 Clusterings-2"> <img src="figs/clusters_dataset2_k_25_k-means++.png" class="img-fluid" style="width:40.0%" alt="Dataset 2 Clusterings-3"> <img src="figs/clusters_dataset2_k_25_random.png" class="img-fluid" style="width:40.0%" alt="Dataset 2 Clusterings-4"></p>
+</div>
+</div>
+</div>
+<p>Similar to Dataset 1, the clusterings generated by both initialization methods appear quite alike in the k=3 scenario. However, when k is increased to 25, a discernible difference emerges between the resulting clusterings of the two techniques. This discrepancy is likely attributable to the greater underlying structure present in the data, which allows the k-means++ initialization method to consistently position centroids in a manner distinct from random initialization.</p>
+</section>
+<section id="cost-vs.-k-1" class="level4">
+<h4 class="anchored" data-anchor-id="cost-vs.-k-1">Cost vs.&nbsp;k</h4>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cost_vs_k_dataset2.png" class="img-fluid figure-img" style="width:60.0%"></p>
+<p></p><figcaption class="figure-caption">Dataset 2 Cost vs.&nbsp;k</figcaption><p></p>
+</figure>
+</div>
+<p>Despite the visible differences in the clusterings produced by the two initialization methods, it is noteworthy that they achieve similar cost values. This outcome highlights the effectiveness of both approaches in minimizing the sum of squared Euclidean distances between data points and their corresponding centroids. As a result, even though the cluster assignments may appear different, the overall quality of the clustering solutions remains comparable, demonstrating that both random and k-means++ initialization methods are capable of providing efficient partitioning of the dataset.</p>
+</section>
+<section id="iterations-vs.-k-1" class="level4">
+<h4 class="anchored" data-anchor-id="iterations-vs.-k-1">Iterations vs.&nbsp;k</h4>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/iterations_vs_k_dataset.png" class="img-fluid figure-img" style="width:60.0%"></p>
+<p></p><figcaption class="figure-caption">Dataset 2 Iterations vs.&nbsp;k</figcaption><p></p>
+</figure>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
