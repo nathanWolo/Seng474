@@ -41,7 +41,7 @@ def plot_dendrogram(data, linkage_method, dataset_number):
 
     # Plot the dendrogram
     plt.figure()
-    hierarchy.dendrogram(Z, truncate_mode='lastp', p=30)  # You can adjust 'p' to show a different number of clusters
+    hierarchy.dendrogram(Z, truncate_mode='lastp', p=15)  # You can adjust 'p' to show a different number of clusters
     plt.title(f'Dendrogram for Dataset {dataset_number} ({linkage_method.capitalize()} Linkage)')
     plt.xlabel('Data Points')
     plt.ylabel('Distance')
@@ -69,7 +69,7 @@ def run_hac(data, linkage, threshold):
 for data, dataset_number in datasets:
     for linkage in linkage_methods:
         # Define a list of reasonable threshold values to test
-        thresholds = [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+        thresholds = [0.01, 0.05, 0.08, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
         plot_dendrogram(data, linkage, dataset_number)
         for threshold in thresholds:
             # Run HAC with the specified linkage method and threshold
